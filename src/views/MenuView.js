@@ -6,12 +6,11 @@ define(function(require, exports, module) {
   var Surface            = require('famous/core/Surface');
   var Modifier           = require('famous/core/Modifier');
   var EventHandler       = require('famous/core/EventHandler');
-  var ViewSequence       = require('famous/core/ViewSequence');
 
   function MenuView() {
     View.apply(this);
 
-    this.menuWidth = 100;
+    this.menuWidth = 150;
 
     this.mainSurface = new Surface({
       size: [this.menuWidth, undefined],
@@ -21,7 +20,7 @@ define(function(require, exports, module) {
     });
 
     this.mainModifier = new Modifier({
-      transform: Transform.translate(-100, 0, 0)
+      transform: Transform.translate(-this.menuWidth, 0, 0)
     });
 
     this.add(this.mainModifier).add(this.mainSurface);
