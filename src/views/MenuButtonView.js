@@ -10,6 +10,10 @@ define(function(require, exports, module) {
   function MenuButtonView(params) {
     View.apply(this);
 
+    for (var attrname in params) { 
+      this[attrname] = params[attrname]; 
+    }
+
     this.mainSurface = new Surface({
       size: this.buttonSize,
       properties: {
@@ -24,7 +28,7 @@ define(function(require, exports, module) {
 
     this.iconPadding = [10, 10];
     this.iconSurface = new Surface({
-      content: params.icon ? '<img src="' + params.icon + '" width="' + String(this.buttonSize[0]-iconPadding[0]*2) + '" height="' + String(this.buttonSize[1]-iconPadding[1]*2) + '">' : params.name,
+      content: this.icon ? '<img src="' + params.icon + '" width="' + String(this.buttonSize[0]-iconPadding[0]*2) + '" height="' + String(this.buttonSize[1]-iconPadding[1]*2) + '">' : this.name,
       size: [this.buttonSize[0]-this.iconPadding[0]*2, this.buttonSize[1]-this.iconPadding[1]*2],
       properties: {
         color: 'white',
@@ -42,6 +46,10 @@ define(function(require, exports, module) {
     this.viewNode = new RenderNode();
     this.viewNode.add(this.mainSurface);
     this.viewNode.add(this.iconModifier).add(this.iconSurface);
+
+    this.iconSurface.on('click', function() {
+      this._eventOutput.emit('changeRoute', this.route);
+    }.bind(this));
 
     this.add(this.mainModifier).add(this.viewNode);
 

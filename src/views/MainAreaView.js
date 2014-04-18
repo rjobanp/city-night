@@ -7,35 +7,62 @@ define(function(require, exports, module) {
   var Modifier           = require('famous/core/Modifier');
   var EventHandler       = require('famous/core/EventHandler');
   var ViewSequence       = require('famous/core/ViewSequence');
+  var RenderController       = require('famous/views/RenderController');
 
   function MainAreaView() {
     View.apply(this);
 
-    this.mainSurface = new Surface({
+    this.mainRenderController = new RenderController({
+    });
+
+    this.firstSurface = new Surface({
       size: [undefined, undefined],
       properties: {
         backgroundColor: 'black'
       }
     });
+    this.secondSurface = new Surface({
+      size: [undefined, undefined],
+      properties: {
+        backgroundColor: 'blue'
+      }
+    });
+
+    this.gameRoute = new RenderNode();
+    this.gameRoute.add(this.firstSurface);
+    this.viewRoute = new RenderNode();
+    this.viewRoute.add(this.secondSurface);
+    this.optionsRoute = new RenderNode();
+    this.optionsRoute.add(this.firstSurface);
+    this.aboutRoute = new RenderNode();
+    this.aboutRoute.add(this.secondSurface);
 
     _createMenuToggleButton.apply(this);
 
     // pipe surface events to view input because swipe from appView needs them
-    this.mainSurface.pipe(this);
+    this.firstSurface.pipe(this);
 
     // pipe input events to output
     this._eventInput.pipe(this._eventOutput);
 
-    this.add(this.mainSurface);
+    this.add(this.mainRenderController);
     this.add(this.menuToggleButtonModifier).add(this.menuToggleButtonAnimateModifier).add(this.menuToggleButton);
+
+    this.mainRenderController.show(this.gameRoute);
   }
 
   MainAreaView.prototype = Object.create(View.prototype);
   MainAreaView.prototype.constructor = MainAreaView;
 
+  MainAreaView.prototype.setRoute = function(route) {
+    this.route = route;
+
+    this.mainRenderController.show(this[route + 'Route']);
+  }
+
   function _createMenuToggleButton() {
     this.menuToggleButtonModifier = new Modifier({
-      transform: Transform.translate(10, 10, 0)
+      transform: Transform.translate(10, 10, 1)
     });
     this.menuToggleButtonAnimateModifier = new Modifier({
       transform: Transform.identity

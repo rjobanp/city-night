@@ -32,6 +32,10 @@ define(function(require, exports, module) {
 		// Create main area view
 		this.mainAreaView = new MainAreaView();
 
+		this.menuView.on('changeRoute', function(route) {
+			this.mainAreaView.setRoute(route);
+		}.bind(this));
+
 		// Render node for views
 		this.viewNode = new RenderNode();
 		this.viewNode.add(this.menuView);
@@ -58,7 +62,6 @@ define(function(require, exports, module) {
 			direction: GenericSync.DIRECTION_X
 		});
 
-		// Not sure about this--which view should we be piping?
 		this.mainAreaView.pipe(this.swiper);
 
 		var validSwipeStart = false;

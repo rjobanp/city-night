@@ -35,6 +35,9 @@ define(function(require, exports, module) {
 
     _createMenuButtons.apply(this);
 
+    // pipe input events to output
+    this._eventInput.pipe(this._eventOutput);
+
   }
 
   MenuView.prototype = Object.create(View.prototype);
@@ -44,15 +47,19 @@ define(function(require, exports, module) {
     var buttonData = [
       {
         name: 'Game Mode',
+        route: 'game',
         icon: ''
       }, {
         name: 'View Mode',
+        route: 'view',
         icon: ''
       }, {
         name: 'Options',
+        route: 'options',
         icon: ''
       }, {
         name: 'About',
+        route: 'about',
         icon: ''
       }
     ];
@@ -69,6 +76,7 @@ define(function(require, exports, module) {
       this.buttonModifiers.push(buttonModifier);
       this.buttonViews.push(buttonView);
       this.viewNode.add(buttonModifier).add(buttonView);
+      buttonView.pipe(this);
     }
 
     this.resetMenuButtons();
