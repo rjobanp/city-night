@@ -3,10 +3,12 @@ define(function(require, exports, module) {
   var View = require('famous/core/View');
   var RenderNode = require('famous/core/RenderNode')
   var Transform = require('famous/core/Transform');
-  var Surface = require('famous/core/Surface');
+  var Transitionable = require('famous/transitions/Transitionable');
   var Modifier = require('famous/core/Modifier');
   var EventHandler = require('famous/core/EventHandler');
   var RenderController = require('famous/views/RenderController');
+  var GenericSync = require('famous/inputs/GenericSync');
+  var MouseSync = require('famous/inputs/MouseSync');
 
   // custom dependencies
   var CityView = require('src/views/CityView.js');
@@ -32,23 +34,42 @@ define(function(require, exports, module) {
       }
     }
 
+    // Create the city views
     this.currentViewIndex = 0;
     this.cityViews = [new CityView(this.cities[0]), new CityView(this.cities[1])];
 
     this.cityViewRenderController = new RenderController();
 
-    this.add(this.cityViewRenderController);
+    // Create modifiers for moving view area
+    this.mainModifier = new Modifier();
+    this.rotateModifier = new Modifier({
+      origin: [0.5, 0.5]
+    });
+    // Add transitionables to this main view modifier
+    this.mainXTransitionable = new Transitionable(0);
+    this.mainYTransitionable = new Transitionable(0);
+    this.mainModifier.transformFrom(function() {
+      return Transform.translate(this.mainXTransitionable.get(), this.mainYTransitionable.get(), 0);
+    }.bind(this));
+    this.rotateModifier.transformFrom(function() {
+      return Transform.rotateZ(this.mainXTransitionable.get()*Math.PI/720);
+    }.bind(this));
+
+
+    this.add(this.mainModifier).add(this.rotateModifier).add(this.cityViewRenderController);
+    
+    // Show the first city view
     this.nextCityView();
 
+    // Pipe events from city views
     this.cityViews[0].pipe(this);
     this.cityViews[1].pipe(this);
 
     // pipe input events to output
     this._eventInput.pipe(this._eventOutput);
 
-    this.on('click', function() {
-      this.nextCityView();
-    }.bind(this));
+    // Setup swipe
+    _setSwipeHandling.apply(this);
   }
 
   CityFrameView.prototype = Object.create(View.prototype);
@@ -79,6 +100,69 @@ define(function(require, exports, module) {
 
   function getRandomInt (min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function _setSwipeHandling() {
+    // add mouse sync to defaults touch and scroll sync on generic sync
+    GenericSync.register(MouseSync);
+
+    this.swiperX = new GenericSync(function() {
+      return this.mainXTransitionable.get();
+    }.bind(this), {
+      direction: GenericSync.DIRECTION_X
+    });
+
+    this.swiperY = new GenericSync(function() {
+      return this.mainYTransitionable.get();
+    }.bind(this), {
+      direction: GenericSync.DIRECTION_Y
+    });
+
+    this.pipe(this.swiperX);
+    this.pipe(this.swiperY);
+
+    var validSwipeXStart = true;
+    this.swiperX.on('start', function(data) {
+      // if this swipe starts from the left side
+      if ( data.clientX - this.mainXTransitionable.get() < 100 ) {
+        validSwipeXStart = false;
+      }
+    }.bind(this));
+    var validSwipeYStart = true;
+    this.swiperY.on('start', function(data) {
+      // if this swipe starts from the left side
+      if ( data.clientX - this.mainXTransitionable.get() < 100 ) {
+        validSwipeYStart = false;
+      }
+    }.bind(this));
+
+    this.swiperX.on('update', function(data) {
+      validSwipeXStart && this.mainXTransitionable.set(data.position);
+    }.bind(this));
+
+    this.swiperY.on('update', function(data) {
+      validSwipeYStart && this.mainYTransitionable.set(data.position);
+    }.bind(this));
+
+    this.swiperX.on('end', _endSwipe.bind(this));
+
+    this.swiperY.on('end', _endSwipe.bind(this));
+
+    function _endSwipe() {
+      validSwipeXStart = true;
+      validSwipeYStart = true;
+
+      if ( Math.abs(this.mainXTransitionable.get()) > 100 || Math.abs(this.mainYTransitionable.get()) > 50 ) {
+        this.nextCityView();
+      }
+      this.resetTransitionables();
+    }
+
+  }
+
+  CityFrameView.prototype.resetTransitionables = function() {
+    this.mainXTransitionable.set(0);
+    this.mainYTransitionable.set(0);
   }
 
   module.exports = CityFrameView;
