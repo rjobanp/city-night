@@ -42,7 +42,7 @@ define(function(require, exports, module) {
     // Setup swipe handling for opening menu side
 		_setSwipeHandling.apply(this);
     // Trigger menu opening based on click of menu button also
-    this.mainAreaView.on('menuButtonClicked', this.toggleMenu.bind(this));
+    this.mainAreaView.on('menuToggleButtonClicked', this.toggleMenu.bind(this));
 	}
 
 	AppView.prototype = Object.create(View.prototype);
@@ -70,6 +70,11 @@ define(function(require, exports, module) {
 		}.bind(this));
 
 		this.swiper.on('update', function(data) {
+			// trigger animation of menu buttons
+			if (this.mainTransitionable.get() === 0 && data.position > 0) {
+				this.menuView.showMenuButtons();
+			}
+
 			// move main view, with a max offset of the menu width
 			validSwipeStart && this.mainTransitionable.set(Math.min(this.menuView.menuWidth, Math.max(0, data.position)));
 		}.bind(this));
@@ -91,17 +96,18 @@ define(function(require, exports, module) {
       this.closeMenu();
     } else {
       this.openMenu();
+      this.menuView.showMenuButtons();
     }
   }
 
 	AppView.prototype.openMenu = function() {
-		this.mainTransitionable.set(this.menuView.menuWidth, {duration: 400, curve: 'easeOut'}, function() {
+		this.mainTransitionable.set(this.menuView.menuWidth, {duration: 300, curve: 'easeOut'}, function() {
       this.menuOpen = true;
     }.bind(this));
 	}
 
 	AppView.prototype.closeMenu = function() {
-		this.mainTransitionable.set(0, {duration: 400, curve: 'easeOut'}, function() {
+		this.mainTransitionable.set(0, {duration: 300, curve: 'easeOut'}, function() {
       this.menuOpen = false;
     }.bind(this));
 	}
