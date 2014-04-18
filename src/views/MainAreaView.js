@@ -6,8 +6,10 @@ define(function(require, exports, module) {
   var Surface            = require('famous/core/Surface');
   var Modifier           = require('famous/core/Modifier');
   var EventHandler       = require('famous/core/EventHandler');
-  var ViewSequence       = require('famous/core/ViewSequence');
   var RenderController       = require('famous/views/RenderController');
+
+  // custom dependencies
+  var CityFrameView = require('src/views/CityFrameView.js');
 
   function MainAreaView() {
     View.apply(this);
@@ -29,7 +31,8 @@ define(function(require, exports, module) {
     });
 
     this.gameRoute = new RenderNode();
-    this.gameRoute.add(this.firstSurface);
+    this.gameSurface = new CityFrameView({cityTypes: 'US'});
+    this.gameRoute.add(this.gameSurface);
     this.viewRoute = new RenderNode();
     this.viewRoute.add(this.secondSurface);
     this.optionsRoute = new RenderNode();
@@ -40,7 +43,7 @@ define(function(require, exports, module) {
     _createMenuToggleButton.apply(this);
 
     // pipe surface events to view input because swipe from appView needs them
-    this.firstSurface.pipe(this);
+    this.gameSurface.pipe(this);
 
     // pipe input events to output
     this._eventInput.pipe(this._eventOutput);
