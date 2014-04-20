@@ -155,7 +155,7 @@ define(function(require, exports, module) {
         'US-Tampa.jpg',
         'US-Aurora.jpg',
         'US-Santa_Ana.jpg',
-        'US-St._Louis.jpg',
+        'US-St_Louis.jpg',
         'US-Pittsburgh.jpg',
         'US-Corpus_Christi.jpg',
         'US-Riverside.jpg',

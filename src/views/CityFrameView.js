@@ -3,6 +3,7 @@ define(function(require, exports, module) {
   var View = require('famous/core/View');
   var RenderNode = require('famous/core/RenderNode')
   var Transform = require('famous/core/Transform');
+  var Surface = require('famous/core/Surface');
   var Transitionable = require('famous/transitions/Transitionable');
   var Modifier = require('famous/core/Modifier');
   var EventHandler = require('famous/core/EventHandler');
@@ -34,10 +35,10 @@ define(function(require, exports, module) {
       }
     }
 
-    // Create the city views
+    // Create the city views and render controller
     this.currentViewIndex = 0;
+    this.currentCityIndex = 0;
     this.cityViews = [new CityView(this.cities[0]), new CityView(this.cities[1])];
-
     this.cityViewRenderController = new RenderController();
 
     // Create modifiers for moving view area
@@ -45,7 +46,7 @@ define(function(require, exports, module) {
     this.rotateModifier = new Modifier({
       origin: [0.5, 0.5]
     });
-    // Add transitionables to this main view modifier
+    // Add transitionables to this main view modifiers
     this.mainXTransitionable = new Transitionable(0);
     this.mainYTransitionable = new Transitionable(0);
     this.mainModifier.transformFrom(function() {
@@ -55,9 +56,24 @@ define(function(require, exports, module) {
       return Transform.rotateZ(this.mainXTransitionable.get()*Math.PI/720);
     }.bind(this));
 
+    // Create city name surface
+    this.nameSurface = new Surface({
+      size: [200, 30],
+      opacity: 0.5,
+      properties: {
+        backgroundColor: '#888888',
+        textAlign: 'center'
+      }
+    });
+    this.nameModifier = new Modifier({
+      opacity: 0.8,
+      origin: [0.5, 1],
+      transform: Transform.translate(0, -100, 3)
+    });
 
     this.add(this.mainModifier).add(this.rotateModifier).add(this.cityViewRenderController);
     
+    this.add(this.nameModifier).add(this.nameSurface);
     // Show the first city view
     this.nextCityView();
 
@@ -95,6 +111,8 @@ define(function(require, exports, module) {
     this.currentViewIndex = (this.currentViewIndex === 1) ? 0 : 1;
     this.setCityView(this.currentViewIndex, this.currentCityIndex);
 
+    var cityName = this.cities[this.currentCityIndex].split(/-|\./)[1].replace('_', ' ');
+    this.nameSurface.setContent(cityName);
     this.cityViewRenderController.show(this.cityViews[this.currentViewIndex]);
   }
 
@@ -124,14 +142,14 @@ define(function(require, exports, module) {
     var validSwipeXStart = true;
     this.swiperX.on('start', function(data) {
       // if this swipe starts from the left side
-      if ( data.clientX - this.mainXTransitionable.get() < 100 ) {
+      if ( data.offsetX - this.mainXTransitionable.get() < 100 ) {
         validSwipeXStart = false;
       }
     }.bind(this));
     var validSwipeYStart = true;
     this.swiperY.on('start', function(data) {
       // if this swipe starts from the left side
-      if ( data.clientX - this.mainXTransitionable.get() < 100 ) {
+      if ( data.offsetX - this.mainXTransitionable.get() < 100 ) {
         validSwipeYStart = false;
       }
     }.bind(this));
