@@ -33,14 +33,23 @@ define(function(require, exports, module) {
       }
     }
 
-
-    this.cityView = new CityView(this.cities[getRandomInt(0, this.cities.length-1)]);
+    var firstCities = this.getOptionCities();
+    this.cityView = new CityView(firstCities[0]);
     this.cityModifier = new Modifier();
     this.add(this.cityModifier).add(this.cityView);
 
-    this.buttonView = new GameButtonsView();
+    this.buttonView = new GameButtonsView({cities: firstCities});
     this.buttonModifier = new Modifier();
     this.add(this.buttonModifier).add(this.buttonView);
+    this.buttonView.on('gameButtonClicked', function(i) {
+      var buttonContent = this.buttonView.buttonSurfaces[i].getContent();
+      if ( this.checkAnswer(buttonContent) ) {
+        this.buttonView.animateResult(i, true);
+        // move to next city
+      } else {
+        this.buttonView.animateResult(i, false);
+      }
+    }.bind(this));
 
     this.cityView.pipe(this);
 
@@ -51,6 +60,23 @@ define(function(require, exports, module) {
 
   GameFrameView.prototype = Object.create(View.prototype);
   GameFrameView.prototype.constructor = GameFrameView;
+
+  GameFrameView.prototype.checkAnswer = function(answer) {
+    return ( this.cityView.cityName.replace('_', ' ') === answer ) 
+  }
+
+  GameFrameView.prototype.getOptionCities = function() {
+    var cities = [];
+    for ( var i=0; i < 3; i++ ) {
+      var thisCity = this.cities[getRandomInt(0, this.cities.length-1)];
+      while(cities.indexOf(thisCity) > -1) {
+        thisCity = this.cities[getRandomInt(0, this.cities.length-1)];
+      }
+      cities.push(thisCity);
+    }
+
+    return cities;
+  }
 
   function getRandomInt (min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
