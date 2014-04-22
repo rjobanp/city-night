@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 
   // custom dependencies
   var CityFrameView = require('src/views/CityFrameView.js');
+  var GameFrameView = require('src/views/GameFrameView.js');
 
   function MainAreaView() {
     View.apply(this);
@@ -30,19 +31,11 @@ define(function(require, exports, module) {
       }
     });
 
-    this.gameRoute = new RenderNode();
-    this.gameSurface = new CityFrameView({cityTypes: 'US'});
-    this.gameRoute.add(this.gameSurface);
-    this.viewRoute = new RenderNode();
-    this.viewRoute.add(this.secondSurface);
-    this.optionsRoute = new RenderNode();
-    this.optionsRoute.add(this.firstSurface);
-    this.aboutRoute = new RenderNode();
-    this.aboutRoute.add(this.secondSurface);
-
+    _createRoutes.apply(this);
     _createMenuToggleButton.apply(this);
 
     // pipe surface events to view input because swipe from appView needs them
+    this.viewSurface.pipe(this);
     this.gameSurface.pipe(this);
 
     // pipe input events to output
@@ -61,6 +54,22 @@ define(function(require, exports, module) {
     this.route = route;
 
     this.mainRenderController.show(this[route + 'Route']);
+  }
+
+  function _createRoutes() {
+    this.viewRoute = new RenderNode();
+    this.viewSurface = new CityFrameView({cityTypes: 'US'});
+    this.viewRoute.add(this.viewSurface);
+    
+    this.gameRoute = new RenderNode();
+    this.gameSurface = new GameFrameView({cityTypes: 'US'});
+    this.gameRoute.add(this.gameSurface);
+    
+    this.optionsRoute = new RenderNode();
+    this.optionsRoute.add(this.firstSurface);
+    
+    this.aboutRoute = new RenderNode();
+    this.aboutRoute.add(this.secondSurface);
   }
 
   function _createMenuToggleButton() {
