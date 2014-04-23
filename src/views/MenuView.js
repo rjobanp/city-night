@@ -19,7 +19,7 @@ define(function(require, exports, module) {
     this.mainSurface = new Surface({
       size: [this.menuWidth, undefined],
       properties: {
-        backgroundColor: '#333333'
+        backgroundColor: '#030C22'
       }
     });
 

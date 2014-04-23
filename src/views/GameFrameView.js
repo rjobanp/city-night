@@ -7,6 +7,7 @@ define(function(require, exports, module) {
   var Transitionable = require('famous/transitions/Transitionable');
   var Modifier = require('famous/core/Modifier');
   var EventHandler = require('famous/core/EventHandler');
+  var Timer = require('famous/utilities/Timer');
 
   // custom dependencies
   var CityView = require('src/views/CityView.js');
@@ -42,10 +43,11 @@ define(function(require, exports, module) {
     this.buttonModifier = new Modifier();
     this.add(this.buttonModifier).add(this.buttonView);
     this.buttonView.on('gameButtonClicked', function(i) {
-      var buttonContent = this.buttonView.buttonSurfaces[i].getContent();
-      if ( this.checkAnswer(buttonContent) ) {
+      var buttonCity = this.buttonView.cities[i];
+      if ( this.checkAnswer(buttonCity) ) {
         this.buttonView.animateResult(i, true);
         // move to next city
+        Timer.setTimeout(this.nextCity.bind(this), 1000);
       } else {
         this.buttonView.animateResult(i, false);
       }
@@ -62,7 +64,7 @@ define(function(require, exports, module) {
   GameFrameView.prototype.constructor = GameFrameView;
 
   GameFrameView.prototype.checkAnswer = function(answer) {
-    return ( this.cityView.cityName.replace('_', ' ') === answer ) 
+    return ( this.cityView.cityName === answer.split(/-|\./)[1] ) 
   }
 
   GameFrameView.prototype.getOptionCities = function() {
@@ -76,6 +78,14 @@ define(function(require, exports, module) {
     }
 
     return cities;
+  }
+
+  GameFrameView.prototype.nextCity = function() {
+    var newCities = this.getOptionCities();
+
+    this.cityView.setCity(newCities[0]);
+
+    this.buttonView.setButtons(newCities);
   }
 
   function getRandomInt (min, max) {

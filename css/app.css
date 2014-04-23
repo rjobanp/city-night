@@ -1,5 +1,13 @@
 html {
-    background-color: #000000;
+    background-color: #030C22;
     color: #ffffff;
     font-family: sans-serif;
 } 
+.green-highlight {
+  background-color: #27AE60 !important;
+  color: #ffffff !important;
+}
+.red-highlight {
+  background-color: #C0392B !important;
+  color: #ffffff !important;
+}

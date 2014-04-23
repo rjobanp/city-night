@@ -61,8 +61,10 @@ define(function(require, exports, module) {
       size: [200, 30],
       opacity: 0.5,
       properties: {
-        backgroundColor: '#888888',
-        textAlign: 'center'
+        backgroundColor: '#A9B0B3',
+        color: '#20293F',
+        textAlign: 'center',
+        padding: '5px'
       }
     });
     this.nameModifier = new Modifier({
@@ -111,7 +113,7 @@ define(function(require, exports, module) {
     this.currentViewIndex = (this.currentViewIndex === 1) ? 0 : 1;
     this.setCityView(this.currentViewIndex, this.currentCityIndex);
 
-    var cityName = this.cities[this.currentCityIndex].split(/-|\./)[1].replace('_', ' ');
+    var cityName = this.cities[this.currentCityIndex].split(/-|\./)[1].replace('_', ' ').replace('_', ' ').replace('_', ' ');
     this.nameSurface.setContent(cityName);
     this.cityViewRenderController.show(this.cityViews[this.currentViewIndex]);
   }

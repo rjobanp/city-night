@@ -58,11 +58,11 @@ define(function(require, exports, module) {
 
   function _createRoutes() {
     this.viewRoute = new RenderNode();
-    this.viewSurface = new CityFrameView({cityTypes: 'US'});
+    this.viewSurface = new CityFrameView({cityTypes: ['US', 'World']});
     this.viewRoute.add(this.viewSurface);
     
     this.gameRoute = new RenderNode();
-    this.gameSurface = new GameFrameView({cityTypes: 'US'});
+    this.gameSurface = new GameFrameView({cityTypes: ['US', 'World']});
     this.gameRoute.add(this.gameSurface);
     
     this.optionsRoute = new RenderNode();

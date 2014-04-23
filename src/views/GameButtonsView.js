@@ -8,11 +8,9 @@ define(function(require, exports, module) {
   var Modifier = require('famous/core/Modifier');
   var EventHandler = require('famous/core/EventHandler');
   var SpringTransition = require('famous/transitions/SpringTransition');
-  var WallTransition = require('famous/transitions/WallTransition');
   var SnapTransition = require('famous/transitions/SnapTransition');
 
   Transitionable.registerMethod('spring', SpringTransition);
-  Transitionable.registerMethod('wall', WallTransition);
   Transitionable.registerMethod('snap', SnapTransition);
 
   function GameButtonsView(params) {
@@ -34,24 +32,32 @@ define(function(require, exports, module) {
   GameButtonsView.prototype.animateResult = function(index, result) {
     if ( result ) {
       // they picked the winner
+      this.buttonSurfaces[index].addClass('green-highlight');
       this.buttonYTransitionables[index].set(-400, {method : 'snap',   dampingRatio : 0.4, period : 300});
     } else {
+      // they picked wrong
+      this.buttonSurfaces[index].addClass('red-highlight');
       this.buttonXTransitionables[index].set(-50);
       this.buttonXTransitionables[index].set(0, {method : 'spring', dampingRatio : 0.3, period : 200});
-
+      //this.buttonSurfaces[index].removeClass('red-highlight');
     }
   }
 
   GameButtonsView.prototype.setButtons = function(cities) {
-    cities = cities || this.cities;
+    this.cities = cities || this.cities;
 
     // randomize these cities first
-    shuffleArray(cities);
+    shuffleArray(this.cities);
 
-    for ( var i=0; i < cities.length; i++ ) {
+    for ( var i=0; i < this.cities.length; i++ ) {
       if ( this.buttonSurfaces[i] ) {
-        var cityName = cities[i].split(/-|\./)[1].replace('_', ' ');
+        var cityName = this.cities[i].split(/-|\./)[1].replace('_', ' ').replace('_', ' ').replace('_', ' ');
         this.buttonSurfaces[i].setContent(cityName);
+
+        // reset buttons
+        this.buttonSurfaces[i].setClasses([]);
+        this.buttonXTransitionables[i].set(0);
+        this.buttonYTransitionables[i].set(-(40)*i - 20);
       }
     }
   }
@@ -67,8 +73,11 @@ define(function(require, exports, module) {
         size: [150, 30],
         opacity: 0.5,
         properties: {
-          backgroundColor: '#888888',
-          textAlign: 'center'
+          backgroundColor: '#A9B0B3',
+          color: '#20293F',
+          textAlign: 'center',
+          padding: '5px',
+          fontWeight: 800
         }
       });
 
@@ -80,7 +89,7 @@ define(function(require, exports, module) {
       });
 
       this.buttonModifiers[i].transformFrom(function(i) {
-        return Transform.translate(this.buttonXTransitionables[i].get(), this.buttonYTransitionables[i].get(), 0);
+        return Transform.translate(this.buttonXTransitionables[i].get(), this.buttonYTransitionables[i].get(), 1);
       }.bind(this, i));
 
       this.add(this.buttonModifiers[i]).add(this.buttonSurfaces[i]);

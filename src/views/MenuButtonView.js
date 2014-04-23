@@ -17,7 +17,8 @@ define(function(require, exports, module) {
     this.mainSurface = new Surface({
       size: this.buttonSize,
       properties: {
-        backgroundColor: '#888888'
+        backgroundColor: '#20293F',
+        color: '#A9B0B3'
       }
     });
 
@@ -34,7 +35,7 @@ define(function(require, exports, module) {
         color: 'white',
         textAlign: 'center',
         overflow: 'hidden',
-        fontWeight: 700
+        fontWeight: 400
       }
     });
 
