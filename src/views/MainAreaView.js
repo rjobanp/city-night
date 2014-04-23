@@ -9,14 +9,13 @@ define(function(require, exports, module) {
   var RenderController       = require('famous/views/RenderController');
 
   // custom dependencies
-  var CityFrameView = require('src/views/CityFrameView.js');
+  var FlipFrameView = require('src/views/FlipFrameView.js');
   var GameFrameView = require('src/views/GameFrameView.js');
 
   function MainAreaView() {
     View.apply(this);
 
-    this.mainRenderController = new RenderController({
-    });
+    this.mainRenderController = new RenderController();
 
     this.firstSurface = new Surface({
       size: [undefined, undefined],
@@ -37,6 +36,8 @@ define(function(require, exports, module) {
     // pipe surface events to view input because swipe from appView needs them
     this.viewSurface.pipe(this);
     this.gameSurface.pipe(this);
+    this.firstSurface.pipe(this);
+    this.secondSurface.pipe(this);
 
     // pipe input events to output
     this._eventInput.pipe(this._eventOutput);
@@ -58,7 +59,7 @@ define(function(require, exports, module) {
 
   function _createRoutes() {
     this.viewRoute = new RenderNode();
-    this.viewSurface = new CityFrameView({cityTypes: ['US', 'World']});
+    this.viewSurface = new FlipFrameView({cityTypes: ['US', 'World']});
     this.viewRoute.add(this.viewSurface);
     
     this.gameRoute = new RenderNode();

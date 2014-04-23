@@ -33,8 +33,8 @@ define(function(require, exports, module) {
       size: [this.buttonSize[0]-this.iconPadding[0]*2, this.buttonSize[1]-this.iconPadding[1]*2],
       properties: {
         color: 'white',
+        padding: '20px 0',
         textAlign: 'center',
-        overflow: 'hidden',
         fontWeight: 400
       }
     });

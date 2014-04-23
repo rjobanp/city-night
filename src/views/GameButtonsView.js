@@ -71,10 +71,10 @@ define(function(require, exports, module) {
     for ( var i=0; i < 3; i++ ) {
       this.buttonSurfaces[i] = new Surface({
         size: [150, 30],
-        opacity: 0.5,
+        opacity: 1,
         properties: {
-          backgroundColor: '#A9B0B3',
-          color: '#20293F',
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          color: '#ffffff',
           textAlign: 'center',
           padding: '5px',
           fontWeight: 800

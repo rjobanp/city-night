@@ -15,7 +15,7 @@ define(function(require, exports, module) {
   var CityView = require('src/views/CityView.js');
   var Cities = require('src/models/cities.js');
 
-  function CityFrameView(params) {
+  function FlipFrameView(params) {
     View.apply(this);
 
     for (var attrname in params) { 
@@ -53,7 +53,7 @@ define(function(require, exports, module) {
       return Transform.translate(this.mainXTransitionable.get(), this.mainYTransitionable.get(), 0);
     }.bind(this));
     this.rotateModifier.transformFrom(function() {
-      return Transform.rotateZ(this.mainXTransitionable.get()*Math.PI/720);
+      return Transform.rotate(this.mainYTransitionable.get()*Math.PI/1800,0,this.mainXTransitionable.get()*Math.PI/1600);
     }.bind(this));
 
     // Create city name surface
@@ -64,13 +64,14 @@ define(function(require, exports, module) {
         backgroundColor: '#A9B0B3',
         color: '#20293F',
         textAlign: 'center',
-        padding: '5px'
+        padding: '5px',
+        fontWeight: 800
       }
     });
     this.nameModifier = new Modifier({
       opacity: 0.8,
       origin: [0.5, 1],
-      transform: Transform.translate(0, -100, 3)
+      transform: Transform.translate(0, -100, 80)
     });
 
     this.add(this.mainModifier).add(this.rotateModifier).add(this.cityViewRenderController);
@@ -90,10 +91,10 @@ define(function(require, exports, module) {
     _setSwipeHandling.apply(this);
   }
 
-  CityFrameView.prototype = Object.create(View.prototype);
-  CityFrameView.prototype.constructor = CityFrameView;
+  FlipFrameView.prototype = Object.create(View.prototype);
+  FlipFrameView.prototype.constructor = FlipFrameView;
 
-  CityFrameView.prototype.setCityView = function(viewIndex, cityIndex) {
+  FlipFrameView.prototype.setCityView = function(viewIndex, cityIndex) {
     if ( viewIndex >= 2 || viewIndex < 0 ) {
       viewIndex = 0;
     }
@@ -103,7 +104,7 @@ define(function(require, exports, module) {
     this.cityViews[viewIndex].setCity(this.cities[cityIndex]);
   }
 
-  CityFrameView.prototype.nextCityView = function() {
+  FlipFrameView.prototype.nextCityView = function() {
     var randomNum = getRandomInt(0, this.cities.length-1);
     while (randomNum === this.currentCityIndex) {
       randomNum = getRandomInt(0, this.cities.length-1);
@@ -180,10 +181,10 @@ define(function(require, exports, module) {
 
   }
 
-  CityFrameView.prototype.resetTransitionables = function() {
+  FlipFrameView.prototype.resetTransitionables = function() {
     this.mainXTransitionable.set(0);
     this.mainYTransitionable.set(0);
   }
 
-  module.exports = CityFrameView;
+  module.exports = FlipFrameView;
 });

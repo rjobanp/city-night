@@ -67,7 +67,7 @@ define(function(require, exports, module) {
 		var validSwipeStart = false;
 		this.swiper.on('start', function(data) {
 			// if this swipe starts from the left side
-			if ( data.clientX - this.mainTransitionable.get() < 100 ) {
+			if ( data.offsetX - this.mainTransitionable.get() < 100 ) {
 				validSwipeStart = true;
 			}
 		}.bind(this));

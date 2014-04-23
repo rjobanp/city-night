@@ -46,11 +46,11 @@ define(function(require, exports, module) {
   function _createMenuButtons() {
     var buttonData = [
       {
-        name: 'Game Mode',
+        name: 'Play',
         route: 'game',
         icon: ''
       }, {
-        name: 'View Mode',
+        name: 'Flip',
         route: 'view',
         icon: ''
       }, {
