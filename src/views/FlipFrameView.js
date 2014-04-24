@@ -143,19 +143,15 @@ define(function(require, exports, module) {
     this.pipe(this.swiperY);
 
     var validSwipeXStart = true;
-    this.swiperX.on('start', function(data) {
-      // if this swipe starts from the left side
-      if ( data.offsetX - this.mainXTransitionable.get() < 100 ) {
-        validSwipeXStart = false;
-      }
-    }.bind(this));
     var validSwipeYStart = true;
-    this.swiperY.on('start', function(data) {
+    this.on('touchstart', function(data) {
       // if this swipe starts from the left side
-      if ( data.offsetX - this.mainXTransitionable.get() < 100 ) {
+      if ( data.touches[0].clientX - this.leftTransitionable.get() < 100 ) {
+        validSwipeXStart = false;
         validSwipeYStart = false;
       }
     }.bind(this));
+    
 
     this.swiperX.on('update', function(data) {
       validSwipeXStart && this.mainXTransitionable.set(data.position);

@@ -12,8 +12,10 @@ define(function(require, exports, module) {
   var FlipFrameView = require('src/views/FlipFrameView.js');
   var GameFrameView = require('src/views/GameFrameView.js');
 
-  function MainAreaView() {
+  function MainAreaView(params) {
     View.apply(this);
+
+    this.leftTransitionable = params.leftTransitionable;
 
     this.mainRenderController = new RenderController();
 
@@ -59,7 +61,7 @@ define(function(require, exports, module) {
 
   function _createRoutes() {
     this.viewRoute = new RenderNode();
-    this.viewSurface = new FlipFrameView({cityTypes: ['US', 'World']});
+    this.viewSurface = new FlipFrameView({cityTypes: ['US', 'World'], leftTransitionable: this.leftTransitionable});
     this.viewRoute.add(this.viewSurface);
     
     this.gameRoute = new RenderNode();

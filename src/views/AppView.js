@@ -30,7 +30,7 @@ define(function(require, exports, module) {
     this.menuOpen = false;
 
 		// Create main area view
-		this.mainAreaView = new MainAreaView();
+		this.mainAreaView = new MainAreaView({leftTransitionable: this.mainTransitionable});
 
 		this.menuView.on('changeRoute', function(route) {
 			this.mainAreaView.setRoute(route);
@@ -65,9 +65,9 @@ define(function(require, exports, module) {
 		this.mainAreaView.pipe(this.swiper);
 
 		var validSwipeStart = false;
-		this.swiper.on('start', function(data) {
+		this.mainAreaView.on('touchstart', function(data) {
 			// if this swipe starts from the left side
-			if ( data.offsetX - this.mainTransitionable.get() < 100 ) {
+			if ( data.touches[0].clientX - this.mainTransitionable.get() < 100 ) {
 				validSwipeStart = true;
 			}
 		}.bind(this));
