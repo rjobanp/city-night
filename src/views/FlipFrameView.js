@@ -1,13 +1,10 @@
 define(function(require, exports, module) {
   // Famous Modules
   var View = require('famous/core/View');
-  var RenderNode = require('famous/core/RenderNode')
   var Transform = require('famous/core/Transform');
   var Surface = require('famous/core/Surface');
   var Transitionable = require('famous/transitions/Transitionable');
   var Modifier = require('famous/core/Modifier');
-  var EventHandler = require('famous/core/EventHandler');
-  var RenderController = require('famous/views/RenderController');
   var GenericSync = require('famous/inputs/GenericSync');
   var MouseSync = require('famous/inputs/MouseSync');
   var Timer = require('famous/utilities/Timer');
@@ -83,11 +80,17 @@ define(function(require, exports, module) {
         fontWeight: 800
       }
     });
+
+    this.nameTransitionable = new Transitionable(-100);
+
     this.nameModifier = new Modifier({
       opacity: 1,
-      origin: [0.5, 1],
-      transform: Transform.translate(0, -100, 80)
+      origin: [0.5, 1]
     });
+
+    this.nameModifier.transformFrom(function() {
+      return Transform.translate(0, this.nameTransitionable.get(), 80)
+    }.bind(this));
 
     this.add(this.nameModifier).add(this.nameSurface);
   }
@@ -190,7 +193,11 @@ define(function(require, exports, module) {
 
         this.mainYTransitionable.set(endY, {duration: 600, curve: 'easeOut'});
         
-        
+        this.nameTransitionable.set(50, {duration: 300, curve: 'easeOut'}, function() {
+          Timer.setTimeout(function() {
+            this.nameTransitionable.set(-100, {duration: 400, curve: 'easeIn'});
+          }.bind(this), 300);
+        }.bind(this));
       } else {
         this.mainXTransitionable.set(0, {duration: 0});
         this.mainYTransitionable.set(0, {duration: 0});

@@ -5,7 +5,6 @@ define(function(require, exports, module) {
 	var Transform = require('famous/core/Transform');
 	var Transitionable = require('famous/transitions/Transitionable');
 	var Modifier = require('famous/core/Modifier');
-	var EventHandler = require('famous/core/EventHandler');
 	var GenericSync = require('famous/inputs/GenericSync');
 	var MouseSync = require('famous/inputs/MouseSync');
 
@@ -73,7 +72,7 @@ define(function(require, exports, module) {
 				validSwipeStart = true;
 			}
 		}.bind(this));
-		
+
 		// this is for non touch devices
 		this.mainAreaView.on('mousedown', function(data) {
 			// if this swipe starts from the left side

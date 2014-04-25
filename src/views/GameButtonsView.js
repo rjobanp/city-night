@@ -1,12 +1,10 @@
 define(function(require, exports, module) {
   // Famous Modules
   var View = require('famous/core/View');
-  var RenderNode = require('famous/core/RenderNode')
   var Transform = require('famous/core/Transform');
   var Surface = require('famous/core/Surface');
   var Transitionable = require('famous/transitions/Transitionable');
   var Modifier = require('famous/core/Modifier');
-  var EventHandler = require('famous/core/EventHandler');
   var SpringTransition = require('famous/transitions/SpringTransition');
   var SnapTransition = require('famous/transitions/SnapTransition');
 
