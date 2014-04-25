@@ -10,6 +10,7 @@ define(function(require, exports, module) {
   var RenderController = require('famous/views/RenderController');
   var GenericSync = require('famous/inputs/GenericSync');
   var MouseSync = require('famous/inputs/MouseSync');
+  var Timer = require('famous/utilities/Timer');
 
   // custom dependencies
   var CityView = require('src/views/CityView.js');
@@ -35,11 +36,67 @@ define(function(require, exports, module) {
       }
     }
 
+    _setCityView.apply(this);
+    _setNameView.apply(this);
+
+    // Show the first city view
+    this.nextCityView();
+
+    // pipe input events to output
+    this._eventInput.pipe(this._eventOutput);
+
+    // Setup swipe
+    _setSwipeHandling.apply(this);
+  }
+
+  FlipFrameView.prototype = Object.create(View.prototype);
+  FlipFrameView.prototype.constructor = FlipFrameView;
+
+
+  FlipFrameView.prototype.nextCityView = function() {
+    var randomNum = getRandomInt(0, this.cities.length-1);
+    while (randomNum === this.currentCityIndex) {
+      randomNum = getRandomInt(0, this.cities.length-1);
+    }
+    this.currentCityIndex = randomNum;
+
+    this.cityView.setCity(this.cities[this.currentCityIndex]);
+
+    var cityName = this.cities[this.currentCityIndex].split(/-|\./)[1].replace('_', ' ').replace('_', ' ').replace('_', ' ');
+    this.nameSurface.setContent(cityName);
+  }
+
+  function getRandomInt (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function _setNameView () {
+    // Create city name surface
+    this.nameSurface = new Surface({
+      size: [200, 30],
+      opacity: 1,
+      properties: {
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        color: '#ffffff',
+        textAlign: 'center',
+        padding: '5px',
+        fontWeight: 800
+      }
+    });
+    this.nameModifier = new Modifier({
+      opacity: 1,
+      origin: [0.5, 1],
+      transform: Transform.translate(0, -100, 80)
+    });
+
+    this.add(this.nameModifier).add(this.nameSurface);
+  }
+
+  function _setCityView () {
     // Create the city views and render controller
     this.currentViewIndex = 0;
     this.currentCityIndex = 0;
-    this.cityViews = [new CityView(this.cities[0]), new CityView(this.cities[1])];
-    this.cityViewRenderController = new RenderController();
+    this.cityView = new CityView(this.cities[0]);
 
     // Create modifiers for moving view area
     this.mainModifier = new Modifier();
@@ -56,71 +113,10 @@ define(function(require, exports, module) {
       return Transform.rotate(this.mainYTransitionable.get()*Math.PI/1800,0,this.mainXTransitionable.get()*Math.PI/1600);
     }.bind(this));
 
-    // Create city name surface
-    this.nameSurface = new Surface({
-      size: [200, 30],
-      opacity: 0.5,
-      properties: {
-        backgroundColor: '#A9B0B3',
-        color: '#20293F',
-        textAlign: 'center',
-        padding: '5px',
-        fontWeight: 800
-      }
-    });
-    this.nameModifier = new Modifier({
-      opacity: 0.8,
-      origin: [0.5, 1],
-      transform: Transform.translate(0, -100, 80)
-    });
-
-    this.add(this.mainModifier).add(this.rotateModifier).add(this.cityViewRenderController);
+     this.add(this.mainModifier).add(this.rotateModifier).add(this.cityView);
     
-    this.add(this.nameModifier).add(this.nameSurface);
-    // Show the first city view
-    this.nextCityView();
-
     // Pipe events from city views
-    this.cityViews[0].pipe(this);
-    this.cityViews[1].pipe(this);
-
-    // pipe input events to output
-    this._eventInput.pipe(this._eventOutput);
-
-    // Setup swipe
-    _setSwipeHandling.apply(this);
-  }
-
-  FlipFrameView.prototype = Object.create(View.prototype);
-  FlipFrameView.prototype.constructor = FlipFrameView;
-
-  FlipFrameView.prototype.setCityView = function(viewIndex, cityIndex) {
-    if ( viewIndex >= 2 || viewIndex < 0 ) {
-      viewIndex = 0;
-    }
-    if ( cityIndex >= this.cities.length || cityIndex < 0 ) {
-      cityIndex = 0;
-    }
-    this.cityViews[viewIndex].setCity(this.cities[cityIndex]);
-  }
-
-  FlipFrameView.prototype.nextCityView = function() {
-    var randomNum = getRandomInt(0, this.cities.length-1);
-    while (randomNum === this.currentCityIndex) {
-      randomNum = getRandomInt(0, this.cities.length-1);
-    }
-    this.currentCityIndex = randomNum;
-    
-    this.currentViewIndex = (this.currentViewIndex === 1) ? 0 : 1;
-    this.setCityView(this.currentViewIndex, this.currentCityIndex);
-
-    var cityName = this.cities[this.currentCityIndex].split(/-|\./)[1].replace('_', ' ').replace('_', ' ').replace('_', ' ');
-    this.nameSurface.setContent(cityName);
-    this.cityViewRenderController.show(this.cityViews[this.currentViewIndex]);
-  }
-
-  function getRandomInt (min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    this.cityView.pipe(this);
   }
 
   function _setSwipeHandling() {
@@ -173,23 +169,35 @@ define(function(require, exports, module) {
 
     this.swiperX.on('end', _endSwipe.bind(this));
 
-    this.swiperY.on('end', _endSwipe.bind(this));
-
     function _endSwipe() {
       validSwipeXStart = true;
       validSwipeYStart = true;
 
       if ( Math.abs(this.mainXTransitionable.get()) > 100 || Math.abs(this.mainYTransitionable.get()) > 50 ) {
-        this.nextCityView();
+        
+        var x = this.mainXTransitionable.get();
+        var endX = ( x > 0 ) ? 650 : -650;
+
+        var y = this.mainYTransitionable.get();
+        var endY = ( y > 0 ) ? 650 : -650;
+
+        this.mainXTransitionable.set(endX, {duration: 400, curve: 'easeOut'}, function() {
+          this.nextCityView();
+          
+          this.mainXTransitionable.set(0, {duration: 300, curve: 'easeOut'});
+          this.mainYTransitionable.set(0, {duration: 300, curve: 'easeOut'});
+        }.bind(this));
+
+        this.mainYTransitionable.set(endY, {duration: 600, curve: 'easeOut'});
+        
+        
+      } else {
+        this.mainXTransitionable.set(0, {duration: 0});
+        this.mainYTransitionable.set(0, {duration: 0});
       }
-      this.resetTransitionables();
+      
     }
 
-  }
-
-  FlipFrameView.prototype.resetTransitionables = function() {
-    this.mainXTransitionable.set(0);
-    this.mainYTransitionable.set(0);
   }
 
   module.exports = FlipFrameView;
