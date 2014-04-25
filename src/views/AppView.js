@@ -65,9 +65,19 @@ define(function(require, exports, module) {
 		this.mainAreaView.pipe(this.swiper);
 
 		var validSwipeStart = false;
+
+		// this is for touch devices
 		this.mainAreaView.on('touchstart', function(data) {
 			// if this swipe starts from the left side
 			if ( data.touches[0].clientX - this.mainTransitionable.get() < 100 ) {
+				validSwipeStart = true;
+			}
+		}.bind(this));
+		
+		// this is for non touch devices
+		this.mainAreaView.on('mousedown', function(data) {
+			// if this swipe starts from the left side
+			if ( data.clientX - this.mainTransitionable.get() < 100 ) {
 				validSwipeStart = true;
 			}
 		}.bind(this));

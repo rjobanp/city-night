@@ -144,6 +144,8 @@ define(function(require, exports, module) {
 
     var validSwipeXStart = true;
     var validSwipeYStart = true;
+
+    // this is for touch devices
     this.on('touchstart', function(data) {
       // if this swipe starts from the left side
       if ( data.touches[0].clientX - this.leftTransitionable.get() < 100 ) {
@@ -152,6 +154,14 @@ define(function(require, exports, module) {
       }
     }.bind(this));
     
+    // this is for non touch devices
+    this.on('mousedown', function(data) {
+      // if this swipe starts from the left side
+      if ( data.clientX - this.leftTransitionable.get() < 100 ) {
+        validSwipeXStart = false;
+        validSwipeYStart = false;
+      }
+    }.bind(this));
 
     this.swiperX.on('update', function(data) {
       validSwipeXStart && this.mainXTransitionable.set(data.position);
