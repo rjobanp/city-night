@@ -31,7 +31,7 @@ define(function(require, exports, module) {
     if ( result ) {
       // they picked the winner
       this.buttonSurfaces[index].addClass('green-highlight');
-      this.buttonYTransitionables[index].set(-300, {method : 'snap',   dampingRatio : 0.4, period : 300});
+      this.buttonYTransitionables[index].set(-300, {method : 'snap',   dampingRatio : 0.4, period : 200});
     } else {
       // they picked wrong
       this.buttonSurfaces[index].addClass('red-highlight');

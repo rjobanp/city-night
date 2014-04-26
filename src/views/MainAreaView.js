@@ -56,6 +56,10 @@ define(function(require, exports, module) {
   MainAreaView.prototype.setRoute = function(route) {
     this.route = route;
 
+    if ( this.route === 'game' ) {
+      this.gameSurface._eventInput.emit('resetGame');
+    }
+
     this.mainRenderController.show(this[route + 'Route']);
   }
 

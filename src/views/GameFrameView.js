@@ -10,6 +10,7 @@ define(function(require, exports, module) {
   // custom dependencies
   var CityView = require('src/views/CityView.js');
   var GameButtonsView = require('src/views/GameButtonsView.js');
+  var GameControllerView = require('src/views/GameControllerView.js');
   var Cities = require('src/models/cities.js');
 
   function GameFrameView(params) {
@@ -38,8 +39,16 @@ define(function(require, exports, module) {
 
     _setButtonsView.call(this, firstCities);
 
+    this.gameControllerView = new GameControllerView();
+    this.add(this.gameControllerView);
+    this.pipe(this.gameControllerView);
+
     // pipe input events to output
     this._eventInput.pipe(this._eventOutput);
+
+    this._eventInput.on('resetGame', function() {
+      this.nextCity();
+    }.bind(this));
 
   }
 
@@ -66,10 +75,10 @@ define(function(require, exports, module) {
   GameFrameView.prototype.nextCity = function() {
     var newCities = this.getOptionCities();
 
-    this.cityTransitionable.set(100, {duration: 500, curve: 'easeOut'}, function() {
+    this.cityTransitionable.set(100, {duration: 300, curve: 'easeOut'}, function() {
       this.cityView.setCity(newCities[0]);
 
-      this.cityTransitionable.set(0, {duration: 500, curve: 'easeIn'});
+      this.cityTransitionable.set(0, {duration: 400, curve: 'easeIn'});
     }.bind(this));
     
     this.buttonView.setButtons(newCities);
@@ -108,10 +117,12 @@ define(function(require, exports, module) {
       var buttonCity = this.buttonView.cities[i];
       if ( this.checkAnswer(buttonCity) ) {
         this.buttonView.animateResult(i, true);
+        this._eventOutput.emit('changeScore', 100);
         // move to next city
-        Timer.setTimeout(this.nextCity.bind(this), 1000);
+        Timer.setTimeout(this.nextCity.bind(this), 750);
       } else {
         this.buttonView.animateResult(i, false);
+        this._eventOutput.emit('changeScore', -50);
       }
     }.bind(this));
   }
