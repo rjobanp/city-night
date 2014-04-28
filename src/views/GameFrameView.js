@@ -20,18 +20,7 @@ define(function(require, exports, module) {
       this[attrname] = params[attrname]; 
     }
 
-    // Add the selected city type cities to cities array
-    this.cities = [];
-    if ( this.cityTypes.indexOf('US') > -1 ) {
-      for ( var i=0; i < Cities.US.length; i++ ) {
-        this.cities.push(Cities.US[i]);
-      }
-    }
-    if ( this.cityTypes.indexOf('World') > -1 ) {
-      for ( var i=0; i < Cities.World.length; i++ ) {
-        this.cities.push(Cities.World[i]);
-      }
-    }
+    this.setCities();
 
     var firstCities = this.getOptionCities();
     
@@ -82,6 +71,23 @@ define(function(require, exports, module) {
     }.bind(this));
     
     this.buttonView.setButtons(newCities);
+  }
+
+  GameFrameView.prototype.setCities = function (cityTypes) {
+    // Add the selected city type cities to cities array
+    this.cityTypes = cityTypes || this.cityTypes;
+    this.cities = [];
+
+    if ( this.cityTypes.indexOf('US') > -1 ) {
+      for ( var i=0; i < Cities.US.length; i++ ) {
+        this.cities.push(Cities.US[i]);
+      }
+    }
+    if ( this.cityTypes.indexOf('World') > -1 ) {
+      for ( var i=0; i < Cities.World.length; i++ ) {
+        this.cities.push(Cities.World[i]);
+      }
+    }
   }
 
   function _setCityView (firstCities) {

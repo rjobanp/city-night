@@ -18,7 +18,8 @@ define(function(require, exports, module) {
       size: this.buttonSize,
       properties: {
         backgroundColor: '#20293F',
-        color: '#A9B0B3'
+        color: '#A9B0B3',
+        cursor: 'pointer'
       }
     });
 
@@ -33,9 +34,10 @@ define(function(require, exports, module) {
       size: [this.buttonSize[0]-this.iconPadding[0]*2, this.buttonSize[1]-this.iconPadding[1]*2],
       properties: {
         color: 'white',
-        padding: '20px 0',
+        padding: '30px 0',
         textAlign: 'center',
-        fontWeight: 400
+        fontWeight: 400,
+        cursor: 'pointer'
       }
     });
 
@@ -59,7 +61,7 @@ define(function(require, exports, module) {
   MenuButtonView.prototype = Object.create(View.prototype);
   MenuButtonView.prototype.constructor = MenuButtonView;
 
-  MenuButtonView.prototype.buttonSize = [80, 80];
+  MenuButtonView.prototype.buttonSize = [100, 100];
 
   MenuButtonView.prototype.resetIcon = function() {
     this.iconModifier.setOpacity(0);

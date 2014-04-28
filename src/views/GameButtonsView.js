@@ -55,7 +55,7 @@ define(function(require, exports, module) {
         // reset buttons
         this.buttonSurfaces[i].setClasses([]);
         this.buttonXTransitionables[i].set(0);
-        this.buttonYTransitionables[i].set(-(40)*i - 20);
+        this.buttonYTransitionables[i].set(-(50)*i - 20);
       }
     }
   }
@@ -68,19 +68,21 @@ define(function(require, exports, module) {
 
     for ( var i=0; i < 3; i++ ) {
       this.buttonSurfaces[i] = new Surface({
-        size: [150, 30],
+        size: [200, 35],
         opacity: 1,
         properties: {
           backgroundColor: 'rgba(0,0,0,0.7)',
           color: '#ffffff',
           textAlign: 'center',
           padding: '5px',
-          fontWeight: 800
+          fontWeight: 800,
+          whiteSpace: 'nowrap',
+          cursor: 'pointer'
         }
       });
 
       this.buttonXTransitionables[i] = new Transitionable(0);
-      this.buttonYTransitionables[i] = new Transitionable(-(40)*i - 20);
+      this.buttonYTransitionables[i] = new Transitionable(-(50)*i - 20);
 
       this.buttonModifiers[i] = new Modifier({
         origin: [0.5, 1]

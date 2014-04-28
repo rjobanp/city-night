@@ -14,7 +14,7 @@ define(function(require, exports, module) {
   function MenuView() {
     View.apply(this);
 
-    this.menuWidth = 150;
+    this.menuWidth = 200;
 
     this.mainSurface = new Surface({
       size: [this.menuWidth, undefined],
@@ -51,15 +51,11 @@ define(function(require, exports, module) {
         icon: ''
       }, {
         name: 'Flip',
-        route: 'view',
+        route: 'flip',
         icon: ''
       }, {
         name: 'Options',
         route: 'options',
-        icon: ''
-      }, {
-        name: 'About',
-        route: 'about',
         icon: ''
       }
     ];

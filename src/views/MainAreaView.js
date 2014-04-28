@@ -1,8 +1,9 @@
 define(function(require, exports, module) {
   // Famous Modules
   var View               = require('famous/core/View');
-  var RenderNode         = require('famous/core/RenderNode')
+  var RenderNode         = require('famous/core/RenderNode');
   var Transform          = require('famous/core/Transform');
+  var ImageSurface = require('famous/surfaces/ImageSurface');
   var Surface            = require('famous/core/Surface');
   var Modifier           = require('famous/core/Modifier');
   var EventHandler       = require('famous/core/EventHandler');
@@ -11,43 +12,53 @@ define(function(require, exports, module) {
   // custom dependencies
   var FlipFrameView = require('src/views/FlipFrameView.js');
   var GameFrameView = require('src/views/GameFrameView.js');
+  var OptionsView = require('src/views/OptionsView.js');
 
   function MainAreaView(params) {
     View.apply(this);
 
-    this.leftTransitionable = params.leftTransitionable;
+    for (var attrname in params) { 
+      this[attrname] = params[attrname]; 
+    }
 
-    this.mainRenderController = new RenderController();
+    // set default app options
+    this.cityTypes = ['US', 'World'];
 
-    this.firstSurface = new Surface({
-      size: [undefined, undefined],
-      properties: {
-        backgroundColor: 'black'
-      }
-    });
-    this.secondSurface = new Surface({
-      size: [undefined, undefined],
-      properties: {
-        backgroundColor: 'blue'
-      }
+    this.mainRenderController = new RenderController({
+      overlap: true
     });
 
     _createRoutes.apply(this);
     _createMenuToggleButton.apply(this);
 
-    // pipe surface events to view input because swipe from appView needs them
-    this.viewSurface.pipe(this);
-    this.gameSurface.pipe(this);
-    this.firstSurface.pipe(this);
-    this.secondSurface.pipe(this);
-
     // pipe input events to output
     this._eventInput.pipe(this._eventOutput);
 
     this.add(this.mainRenderController);
-    this.add(this.menuToggleButtonModifier).add(this.menuToggleButtonAnimateModifier).add(this.menuToggleButton);
 
     this.mainRenderController.show(this.gameRoute);
+
+
+    this.on('selectedCityType', function(event) {
+      var currentTypes = this.cityTypes;
+
+      if ( event.selected && !(currentTypes.indexOf(event.cityType) > -1) ) {
+        // add to the array
+        this.cityTypes.push(event.cityType);
+      } else if ( !event.selected && (currentTypes.indexOf(event.cityType) > -1) ) {
+        // make sure that there arent going to be no city types left
+        if ( currentTypes.length > 1 ) {
+          // remove from the array
+          this.cityTypes.splice(currentTypes.indexOf(event.cityType), 1);
+        } else {
+          // reselect this toggle
+          this.optionsSurface[event.cityType + 'Toggle'].select();
+        }
+      }
+
+      this.flipSurface.setCities(this.cityTypes);
+      this.gameSurface.setCities(this.cityTypes);
+    }.bind(this));
   }
 
   MainAreaView.prototype = Object.create(View.prototype);
@@ -64,19 +75,22 @@ define(function(require, exports, module) {
   }
 
   function _createRoutes() {
-    this.viewRoute = new RenderNode();
-    this.viewSurface = new FlipFrameView({cityTypes: ['US', 'World'], leftTransitionable: this.leftTransitionable});
-    this.viewRoute.add(this.viewSurface);
+    this.flipRoute = new RenderNode();
+    this.flipSurface = new FlipFrameView({cityTypes: ['US', 'World'], leftTransitionable: this.leftTransitionable});
+    this.flipRoute.add(this.flipSurface);
     
     this.gameRoute = new RenderNode();
     this.gameSurface = new GameFrameView({cityTypes: ['US', 'World']});
     this.gameRoute.add(this.gameSurface);
     
     this.optionsRoute = new RenderNode();
-    this.optionsRoute.add(this.firstSurface);
-    
-    this.aboutRoute = new RenderNode();
-    this.aboutRoute.add(this.secondSurface);
+    this.optionsSurface = new OptionsView();
+    this.optionsRoute.add(this.optionsSurface);
+
+    // pipe surface events to view input because swipe from appView needs them
+    this.flipSurface.pipe(this);
+    this.gameSurface.pipe(this);
+    this.optionsSurface.pipe(this);
   }
 
   function _createMenuToggleButton() {
@@ -86,9 +100,12 @@ define(function(require, exports, module) {
     this.menuToggleButtonAnimateModifier = new Modifier({
       transform: Transform.identity
     });
-    this.menuToggleButton = new Surface({
+    this.menuToggleButton = new ImageSurface({
       size: [30, 30],
-      content: '<img src="src/images/menu_btn.png" width="30" height="30">'
+      content: 'src/images/menu_btn.png',
+      properties: {
+        cursor: 'pointer'
+      }
     });
     this.menuToggleButton.on('click', function() {
       this._eventOutput.emit('menuToggleButtonClicked');
@@ -96,6 +113,8 @@ define(function(require, exports, module) {
     }.bind(this));
     this.menuToggleButton.on('mousedown', this.animateMenuToggleButton.bind(this));
     this.menuToggleButton.on('touchstart', this.animateMenuToggleButton.bind(this));
+  
+    this.add(this.menuToggleButtonModifier).add(this.menuToggleButtonAnimateModifier).add(this.menuToggleButton);
   }
 
   MainAreaView.prototype.animateMenuToggleButton = function() {
