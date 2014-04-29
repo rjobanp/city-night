@@ -4,7 +4,6 @@ define(function(require, exports, module) {
   var RenderNode = require('famous/core/RenderNode');
   var Transform = require('famous/core/Transform');
   var Surface = require('famous/core/Surface');
-  var Transitionable = require('famous/transitions/Transitionable');
   var Modifier = require('famous/core/Modifier');
   var ToggleButton = require('famous/widgets/ToggleButton');
 

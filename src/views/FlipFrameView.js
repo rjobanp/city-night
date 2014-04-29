@@ -185,10 +185,10 @@ define(function(require, exports, module) {
       if ( Math.abs(this.mainXTransitionable.get()) > 100 || Math.abs(this.mainYTransitionable.get()) > 50 ) {
         
         var x = this.mainXTransitionable.get();
-        var endX = ( x > 0 ) ? 650 : -650;
+        var endX = ( x > 0 ) ? 950 : -950;
 
         var y = this.mainYTransitionable.get();
-        var endY = ( y > 0 ) ? 650 : -650;
+        var endY = ( y > 0 ) ? 950 : -950;
 
         this.mainXTransitionable.set(endX, {duration: 400, curve: 'easeOut'}, function() {
           this.nextCityView();

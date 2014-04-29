@@ -30,20 +30,29 @@ define(function(require, exports, module) {
       origin: [1, 0]
     });
     this.scoreboardModifier.transformFrom(function() {
-      return Transform.translate(-100, 20, 10)
-    })
+      return Transform.translate(-20, 20, 5)
+    });
 
     this.add(this.scoreboardModifier).add(this.scoreboardView);
+    this.scoreboardView.pipe(this._eventInput);
 
     this._eventInput.on('changeScore', function(diff) {
       this.scoreboardView.animateScoreChange(diff);
       this.scoreboardView.changeScore(diff);
+      if ( diff > 0 ) {
+        this.scoreboardView.addStreak();
+      } else {
+        this.scoreboardView.resetStreak();
+      }
     }.bind(this));
 
     this._eventInput.on('resetGame', function() {
       this.scoreboardView.resetScore();
+      this.scoreboardView.resetStreak();
+      this.scoreboardView.resetLongestStreak();
       this.scoreboardView.resetTimer();
       this.scoreboardView.startTimer();
+      this._eventOutput.emit('resetGame');
     }.bind(this));
   }
 

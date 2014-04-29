@@ -31,6 +31,9 @@ define(function(require, exports, module) {
     this.gameControllerView = new GameControllerView();
     this.add(this.gameControllerView);
     this.pipe(this.gameControllerView);
+    this.gameControllerView.on('resetGame', function() {
+      this.nextCity();
+    }.bind(this));
 
     // pipe input events to output
     this._eventInput.pipe(this._eventOutput);
