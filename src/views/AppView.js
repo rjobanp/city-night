@@ -33,6 +33,7 @@ define(function(require, exports, module) {
 
 		this.menuView.on('changeRoute', function(route) {
 			this.mainAreaView.setRoute(route);
+			this.closeMenu();
 		}.bind(this));
 
 		// Render node for views
@@ -94,7 +95,7 @@ define(function(require, exports, module) {
 		this.swiper.on('end', function(data) {
 			validSwipeStart = false;
 
-			if ( this.mainTransitionable.get() > 50 ) {
+			if ( this.mainTransitionable.get() > 100 ) {
 				this.openMenu();
 			} else {
 				this.closeMenu();

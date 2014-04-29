@@ -38,7 +38,6 @@ define(function(require, exports, module) {
 
     this.mainRenderController.show(this.gameRoute);
 
-
     this.on('selectedCityType', function(event) {
       var currentTypes = this.cityTypes;
 

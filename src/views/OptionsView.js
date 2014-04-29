@@ -29,6 +29,9 @@ define(function(require, exports, module) {
 
     this.add(this.mainModifier).add(this.mainNode);
 
+    // create background surface to catch swipe events
+    _createBackgroundSurface.apply(this);
+
     // pipe input events to output
     this._eventInput.pipe(this._eventOutput);
 
@@ -107,6 +110,18 @@ define(function(require, exports, module) {
     });
 
     this.mainNode.add(this.optionsHeaderSurface);
+  }
+
+  function _createBackgroundSurface() {
+    this.bgSurface = new Surface();
+
+    this.bgModifier = new Modifier({
+      transform: Transform.translate(0,0,-1)
+    });
+
+    this.add(this.bgModifier).add(this.bgSurface);
+
+    this.bgSurface.pipe(this);
   }
 
   OptionsView.prototype = Object.create(View.prototype);

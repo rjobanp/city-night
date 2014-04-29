@@ -68,7 +68,7 @@ define(function(require, exports, module) {
     var newCities = this.getOptionCities();
 
     this.cityTransitionable.set(100, {duration: 300, curve: 'easeOut'}, function() {
-      this.cityView.setCity(newCities[0]);
+      this.cityView.setCity(newCities[getRandomInt(0,2)]);
 
       this.cityTransitionable.set(0, {duration: 400, curve: 'easeIn'});
     }.bind(this));
