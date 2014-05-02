@@ -22,33 +22,45 @@ define(function(require, exports, module) {
 
     this.setCities();
 
-    var firstCities = this.getOptionCities();
+    this.optionCities = this.getOptionCities();
     
-    _setCityView.call(this, firstCities);
+    _setCityViewA.call(this, this.optionCities);
+    _setCityViewB.call(this, this.optionCities);
 
-    _setButtonsView.call(this, firstCities);
+    _setButtonsView.call(this, this.optionCities);
+
+    this.currentView = 'A';
+
+    this.nextCity();
 
     this.gameControllerView = new GameControllerView();
     this.add(this.gameControllerView);
     this.pipe(this.gameControllerView);
-    this.gameControllerView.on('resetGame', function() {
-      this.nextCity();
-    }.bind(this));
+    this.gameControllerView.on('resetGame', this.resetGame.bind(this));
 
     // pipe input events to output
     this._eventInput.pipe(this._eventOutput);
 
-    this._eventInput.on('resetGame', function() {
-      this.nextCity();
-    }.bind(this));
+    this._eventInput.on('resetGame', this.resetGame.bind(this));
 
   }
 
   GameFrameView.prototype = Object.create(View.prototype);
   GameFrameView.prototype.constructor = GameFrameView;
 
+  GameFrameView.prototype.resetGame = function() {
+    this.optionCities = this.getOptionCities();
+    this.cityViewA.setCity(this.optionCities[getRandomInt(0,2)]);
+    this.currentView = 'B';
+    this.nextCity();
+  }
+
   GameFrameView.prototype.checkAnswer = function(answer) {
-    return ( this.cityView.cityName === answer.split(/-|\./)[1] ) 
+    if ( this.currentView === 'A' ) {
+      return ( this.cityViewA.cityName === answer.split(/-|\./)[1] )
+    } else {
+      return ( this.cityViewB.cityName === answer.split(/-|\./)[1] )
+    }
   }
 
   GameFrameView.prototype.getOptionCities = function() {
@@ -67,13 +79,27 @@ define(function(require, exports, module) {
   GameFrameView.prototype.nextCity = function() {
     var newCities = this.getOptionCities();
 
-    this.cityTransitionable.set(100, {duration: 300, curve: 'easeOut'}, function() {
-      this.cityView.setCity(newCities[getRandomInt(0,2)]);
+    if ( this.currentView === 'A' ) {
+      this.cityTransitionableA.set(100, {duration: 300, curve: 'easeOut'}, function() {
+        this.cityViewA.setCity(newCities[getRandomInt(0,2)]);
 
-      this.cityTransitionable.set(0, {duration: 400, curve: 'easeIn'});
-    }.bind(this));
+        this.cityTransitionableB.set(0, {duration: 400, curve: 'easeIn'});
+      }.bind(this));
+
+      this.currentView = 'B';
+    } else {
+      this.cityTransitionableB.set(100, {duration: 300, curve: 'easeOut'}, function() {
+        this.cityViewB.setCity(newCities[getRandomInt(0,2)]);
+
+        this.cityTransitionableA.set(0, {duration: 400, curve: 'easeIn'});
+      }.bind(this));
+
+      this.currentView = 'A';
+    }
     
-    this.buttonView.setButtons(newCities);
+    this.buttonView.setButtons(this.optionCities);
+
+    this.optionCities = newCities;
   }
 
   GameFrameView.prototype.setCities = function (cityTypes) {
@@ -93,27 +119,50 @@ define(function(require, exports, module) {
     }
   }
 
-  function _setCityView (firstCities) {
-    this.cityView = new CityView(firstCities[0]);
-    this.cityModifier = new Modifier({
+  function _setCityViewA (firstCities) {
+    this.cityViewA = new CityView(firstCities[0]);
+    this.cityModifierA = new Modifier({
       origin: [0.5, 0.5]
     });
-    this.add(this.cityModifier).add(this.cityView);
+    this.add(this.cityModifierA).add(this.cityViewA);
 
     // Add transitionable and transforms to city modifier
-    this.cityTransitionable = new Transitionable(0);
-    this.cityModifier.transformFrom(function() {
+    this.cityTransitionableA = new Transitionable(0);
+    this.cityModifierA.transformFrom(function() {
       return Transform.multiply(
-        Transform.translate(0,0, this.cityTransitionable.get()),
-        Transform.rotateZ(Math.PI*this.cityTransitionable.get()/300)
+        Transform.translate(0,0, -this.cityTransitionableA.get()),
+        Transform.rotateZ(Math.PI*this.cityTransitionableA.get()/300)
       )
     }.bind(this));
 
-    this.cityModifier.opacityFrom(function() {
-      return (1 - (this.cityTransitionable.get()/100))
+    this.cityModifierA.opacityFrom(function() {
+      return (1 - (this.cityTransitionableA.get()/100))
     }.bind(this));
 
-    this.cityView.pipe(this);
+    this.cityViewA.pipe(this);
+  }
+
+  function _setCityViewB (firstCities) {
+    this.cityViewB = new CityView(firstCities[1]);
+    this.cityModifierB = new Modifier({
+      origin: [0.5, 0.5]
+    });
+    this.add(this.cityModifierB).add(this.cityViewB);
+
+    // Add transitionable and transforms to city modifier
+    this.cityTransitionableB = new Transitionable(100);
+    this.cityModifierB.transformFrom(function() {
+      return Transform.multiply(
+        Transform.translate(0,0, -this.cityTransitionableB.get()),
+        Transform.rotateZ(Math.PI*this.cityTransitionableB.get()/300)
+      )
+    }.bind(this));
+
+    this.cityModifierB.opacityFrom(function() {
+      return (1 - (this.cityTransitionableB.get()/100))
+    }.bind(this));
+
+    this.cityViewB.pipe(this);
   }
 
   function _setButtonsView (firstCities) {
