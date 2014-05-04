@@ -22,7 +22,7 @@ define(function(require, exports, module) {
 
     this.setCities();
 
-    _setCityView.apply(this);
+    _setCityViews.apply(this);
     _setNameView.apply(this);
 
     // Show the first city view
@@ -38,18 +38,22 @@ define(function(require, exports, module) {
   FlipFrameView.prototype = Object.create(View.prototype);
   FlipFrameView.prototype.constructor = FlipFrameView;
 
-
   FlipFrameView.prototype.nextCityView = function() {
+    // set the options for the 'current' index as it becomes the other index
     var randomNum = getRandomInt(0, this.cities.length-1);
-    while (randomNum === this.currentCityIndex) {
+    while (randomNum === this.currentCityIndex[this.otherIndex]) {
       randomNum = getRandomInt(0, this.cities.length-1);
     }
-    this.currentCityIndex = randomNum;
+    this.currentCityIndex[this.currentIndex] = randomNum;
+    this.cityView[this.currentIndex].setCity(this.cities[this.currentCityIndex[this.currentIndex]]);
 
-    this.cityView.setCity(this.cities[this.currentCityIndex]);
-
-    var cityName = this.cities[this.currentCityIndex].split(/-|\./)[1].replace('_', ' ').replace('_', ' ').replace('_', ' ');
+    // set the name shown to the 'other' index about to become the currnet index
+    var cityName = this.cities[this.currentCityIndex[this.otherIndex]].split(/-|\./)[1].replace('_', ' ').replace('_', ' ').replace('_', ' ');
     this.nameSurface.setContent(cityName);
+
+    var other = this.currentIndex;
+    this.currentIndex = this.otherIndex;
+    this.otherIndex = other;
   }
 
   function getRandomInt (min, max) {
@@ -101,31 +105,51 @@ define(function(require, exports, module) {
     this.add(this.nameModifier).add(this.nameSurface);
   }
 
-  function _setCityView () {
+  function _setCityViews () {
+    var length = 2;
+
+    this.currentCityIndex = [];
+    this.cityView = [];
+    this.mainModifier = [];
+    this.rotateModifier = [];
+    this.mainXTransitionable = [];
+    this.mainYTransitionable = [];
+
+    for ( var i=0; i<length; i++ ) {
+      _setCityView.call(this, i);
+    }
+
+    this.currentIndex = 0;
+    this.otherIndex = 1;
+
+    this.mainModifier[this.otherIndex].opacityFrom(0);
+  }
+
+  function _setCityView (index) {
     // Create the city views and render controller
-    this.currentViewIndex = 0;
-    this.currentCityIndex = 0;
-    this.cityView = new CityView(this.cities[0]);
+    this.currentCityIndex[index] = index;
+    this.cityView[index] = new CityView(this.cities[index]);
 
     // Create modifiers for moving view area
-    this.mainModifier = new Modifier();
-    this.rotateModifier = new Modifier({
+    this.mainModifier[index] = new Modifier();
+    this.rotateModifier[index] = new Modifier({
       origin: [0.5, 0.5]
     });
-    // Add transitionables to this main view modifiers
-    this.mainXTransitionable = new Transitionable(0);
-    this.mainYTransitionable = new Transitionable(0);
-    this.mainModifier.transformFrom(function() {
-      return Transform.translate(this.mainXTransitionable.get(), this.mainYTransitionable.get(), 0);
-    }.bind(this));
-    this.rotateModifier.transformFrom(function() {
-      return Transform.rotate(this.mainYTransitionable.get()*Math.PI/1800,0,this.mainXTransitionable.get()*Math.PI/1600);
-    }.bind(this));
 
-     this.add(this.mainModifier).add(this.rotateModifier).add(this.cityView);
+    // Add transitionables to this main view modifiers
+    this.mainXTransitionable[index] = new Transitionable(index*1000);
+    this.mainYTransitionable[index] = new Transitionable(index*-1000);
+    this.mainModifier[index].transformFrom(function(index) {
+      return Transform.translate(this.mainXTransitionable[index].get(), this.mainYTransitionable[index].get(), 0);
+    }.bind(this, index));
+    this.rotateModifier[index].transformFrom(function(index) {
+      return Transform.rotate(this.mainYTransitionable[index].get()*Math.PI/1800,0,this.mainXTransitionable[index].get()*Math.PI/1600);
+    }.bind(this, index));
+
+     this.add(this.mainModifier[index]).add(this.rotateModifier[index]).add(this.cityView[index]);
     
     // Pipe events from city views
-    this.cityView.pipe(this);
+    this.cityView[index].pipe(this);
   }
 
   function _setSwipeHandling() {
@@ -133,13 +157,13 @@ define(function(require, exports, module) {
     GenericSync.register(MouseSync);
 
     this.swiperX = new GenericSync(function() {
-      return this.mainXTransitionable.get();
+      return this.mainXTransitionable[this.currentIndex].get();
     }.bind(this), {
       direction: GenericSync.DIRECTION_X
     });
 
     this.swiperY = new GenericSync(function() {
-      return this.mainYTransitionable.get();
+      return this.mainYTransitionable[this.currentIndex].get();
     }.bind(this), {
       direction: GenericSync.DIRECTION_Y
     });
@@ -169,11 +193,11 @@ define(function(require, exports, module) {
     }.bind(this));
 
     this.swiperX.on('update', function(data) {
-      validSwipeXStart && this.mainXTransitionable.set(data.position);
+      validSwipeXStart && this.mainXTransitionable[this.currentIndex].set(data.position);
     }.bind(this));
 
     this.swiperY.on('update', function(data) {
-      validSwipeYStart && this.mainYTransitionable.set(data.position);
+      validSwipeYStart && this.mainYTransitionable[this.currentIndex].set(data.position);
     }.bind(this));
 
     this.swiperX.on('end', _endSwipe.bind(this));
@@ -182,22 +206,27 @@ define(function(require, exports, module) {
       validSwipeXStart = true;
       validSwipeYStart = true;
 
-      if ( Math.abs(this.mainXTransitionable.get()) > 100 || Math.abs(this.mainYTransitionable.get()) > 50 ) {
+      if ( Math.abs(this.mainXTransitionable[this.currentIndex].get()) > 100 || Math.abs(this.mainYTransitionable[this.currentIndex].get()) > 50 ) {
         
-        var x = this.mainXTransitionable.get();
+        var x = this.mainXTransitionable[this.currentIndex].get();
         var endX = ( x > 0 ) ? 950 : -950;
 
-        var y = this.mainYTransitionable.get();
+        var y = this.mainYTransitionable[this.currentIndex].get();
         var endY = ( y > 0 ) ? 950 : -950;
 
-        this.mainXTransitionable.set(endX, {duration: 400, curve: 'easeOut'}, function() {
+        this.mainXTransitionable[this.currentIndex].set(endX, {duration: 400, curve: 'easeOut'}, function() {
+          this.mainModifier[this.currentIndex].opacityFrom(0);
+          this.mainModifier[this.otherIndex].opacityFrom(1);
+
+          this.mainXTransitionable[this.currentIndex].set(1000, {duration: 0});
+          this.mainYTransitionable[this.currentIndex].set(-1000, {duration: 0});
+
+          this.mainXTransitionable[this.otherIndex].set(0, {duration: 300, curve: 'easeIn'});
+          this.mainYTransitionable[this.otherIndex].set(0, {duration: 300, curve: 'easeIn'});
           this.nextCityView();
-          
-          this.mainXTransitionable.set(0, {duration: 300, curve: 'easeOut'});
-          this.mainYTransitionable.set(0, {duration: 300, curve: 'easeOut'});
         }.bind(this));
 
-        this.mainYTransitionable.set(endY, {duration: 600, curve: 'easeOut'});
+        this.mainYTransitionable[this.currentIndex].set(endY, {duration: 600, curve: 'easeOut'});
         
         this.nameTransitionable.set(50, {duration: 300, curve: 'easeOut'}, function() {
           Timer.setTimeout(function() {
@@ -205,8 +234,8 @@ define(function(require, exports, module) {
           }.bind(this), 300);
         }.bind(this));
       } else {
-        this.mainXTransitionable.set(0, {duration: 0});
-        this.mainYTransitionable.set(0, {duration: 0});
+        this.mainXTransitionable[this.currentIndex].set(0, {duration: 0});
+        this.mainYTransitionable[this.currentIndex].set(0, {duration: 0});
       }
       
     }

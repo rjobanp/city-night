@@ -68,6 +68,8 @@ define(function(require, exports, module) {
 
     if ( this.route === 'game' ) {
       this.gameSurface._eventInput.emit('resetGame');
+    } else if ( this.route === 'flip' ) {
+      this.flipSurface.nextCityView();
     }
 
     this.mainRenderController.show(this[route + 'Route']);
