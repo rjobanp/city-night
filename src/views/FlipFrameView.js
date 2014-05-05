@@ -114,14 +114,19 @@ define(function(require, exports, module) {
     this.mainXTransitionable = [];
     this.mainYTransitionable = [];
 
-    for ( var i=0; i<length; i++ ) {
+    for ( var i=length-1; i>-1; i-- ) {
       _setCityView.call(this, i);
     }
 
     this.currentIndex = 0;
     this.otherIndex = 1;
 
-    this.mainModifier[this.otherIndex].opacityFrom(0);
+    this.mainModifier[this.currentIndex].opacityFrom(0);
+    this.mainXTransitionable[this.currentIndex].set(1000);
+    this.mainYTransitionable[this.currentIndex].set(1000);
+
+    this.mainXTransitionable[this.otherIndex].set(0);
+    this.mainYTransitionable[this.otherIndex].set(0);
   }
 
   function _setCityView (index) {
@@ -199,7 +204,7 @@ define(function(require, exports, module) {
       validSwipeYStart && this.mainYTransitionable[this.currentIndex].set(data.position);
     }.bind(this));
 
-    this.swiperX.on('end', _endSwipe.bind(this));
+    this.swiperX.on('end', Timer.debounce(_endSwipe.bind(this), 0));
 
     function _endSwipe() {
       validSwipeXStart = true;

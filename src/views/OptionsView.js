@@ -7,15 +7,12 @@ define(function(require, exports, module) {
   var Modifier = require('famous/core/Modifier');
   var ToggleButton = require('famous/widgets/ToggleButton');
 
-  // custom dependencies
-  
-
   function OptionsView(params) {
     View.apply(this);
 
     this.mainModifier = new Modifier({
       origin: [0.5, 0],
-      transform: Transform.translate(0, 50, 0)
+      transform: Transform.translate(0, 30, 0)
     });
     this.mainNode = new RenderNode();
 
@@ -66,10 +63,10 @@ define(function(require, exports, module) {
     this.WorldToggle.offSurface.setProperties(toggleOffProperties);
 
     this.USModifier = new Modifier({
-      transform: Transform.translate(0, 100, 0)
+      transform: Transform.translate(0, 60, 0)
     });
     this.WorldModifier = new Modifier({
-      transform: Transform.translate(0, 150, 0)
+      transform: Transform.translate(0, 100, 0)
     });
 
     this.mainNode.add(this.USModifier).add(this.USToggle);
@@ -135,7 +132,7 @@ define(function(require, exports, module) {
 
     this.infoModifier = new Modifier({
       origin: [0.5, 0],
-      transform: Transform.translate(0,300,0)
+      transform: Transform.translate(0,175,0)
     });
 
     this.add(this.infoModifier).add(this.infoSurface);

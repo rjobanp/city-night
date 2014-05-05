@@ -1,13 +1,13 @@
 define(function(require, exports, module) {
   // Famous Modules
-  var View               = require('famous/core/View');
-  var RenderNode         = require('famous/core/RenderNode');
-  var Transform          = require('famous/core/Transform');
+  var View = require('famous/core/View');
+  var RenderNode = require('famous/core/RenderNode');
+  var Transform = require('famous/core/Transform');
   var ImageSurface = require('famous/surfaces/ImageSurface');
-  var Surface            = require('famous/core/Surface');
-  var Modifier           = require('famous/core/Modifier');
-  var EventHandler       = require('famous/core/EventHandler');
-  var RenderController       = require('famous/views/RenderController');
+  var Surface = require('famous/core/Surface');
+  var Modifier = require('famous/core/Modifier');
+  var EventHandler = require('famous/core/EventHandler');
+  var RenderController = require('famous/views/RenderController');
 
   // custom dependencies
   var FlipFrameView = require('src/views/FlipFrameView.js');
@@ -66,8 +66,6 @@ define(function(require, exports, module) {
 
     if ( this.route === 'game' ) {
       this.gameSurface._eventInput.emit('resetGame');
-    } else if ( this.route === 'flip' ) {
-      this.flipSurface.nextCityView();
     }
 
     this.mainRenderController.show(this[route + 'Route']);
