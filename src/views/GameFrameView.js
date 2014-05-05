@@ -170,15 +170,19 @@ define(function(require, exports, module) {
 
     // Setup event handler for button clicks
     this.buttonView.on('gameButtonClicked', function(i) {
-      var buttonCity = this.buttonView.cities[i];
-      if ( this.checkAnswer(buttonCity) ) {
-        this.buttonView.animateResult(i, true);
-        this._eventOutput.emit('changeScore', 100);
-        // move to next city
-        Timer.setTimeout(this.nextCity.bind(this), 750);
-      } else {
-        this.buttonView.animateResult(i, false);
-        this._eventOutput.emit('changeScore', -50);
+      // check that game is still running
+      if (this.gameControllerView.scoreboardView.timerOkayToRun) {
+        var buttonCity = this.buttonView.cities[i];
+        // check the answer
+        if ( this.checkAnswer(buttonCity) ) {
+          this.buttonView.animateResult(i, true);
+          this._eventOutput.emit('changeScore', 100);
+          // move to next city
+          Timer.setTimeout(this.nextCity.bind(this), 750);
+        } else {
+          this.buttonView.animateResult(i, false);
+          this._eventOutput.emit('changeScore', -50);
+        }
       }
     }.bind(this));
   }
