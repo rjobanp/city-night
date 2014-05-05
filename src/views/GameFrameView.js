@@ -16,10 +16,8 @@ define(function(require, exports, module) {
   function GameFrameView(params) {
     View.apply(this);
 
-    for (var attrname in params) { 
-      this[attrname] = params[attrname]; 
-    }
-
+    this.cityTypes = params.cityTypes;
+    
     this.setCities();
 
     this.optionCities = this.getOptionCities();

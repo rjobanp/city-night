@@ -16,9 +16,8 @@ define(function(require, exports, module) {
   function FlipFrameView(params) {
     View.apply(this);
 
-    for (var attrname in params) { 
-      this[attrname] = params[attrname]; 
-    }
+    this.cityTypes = params.cityTypes;
+    this.leftTransitionable = params.leftTransitionable;
 
     this.setCities();
 

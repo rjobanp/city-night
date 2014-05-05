@@ -17,9 +17,7 @@ define(function(require, exports, module) {
   function MainAreaView(params) {
     View.apply(this);
 
-    for (var attrname in params) { 
-      this[attrname] = params[attrname]; 
-    }
+    this.leftTransitionable = params.leftTransitionable;
 
     // set default app options
     this.cityTypes = ['US', 'World'];

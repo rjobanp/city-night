@@ -13,10 +13,6 @@ define(function(require, exports, module) {
   function OptionsView(params) {
     View.apply(this);
 
-    for (var attrname in params) { 
-      this[attrname] = params[attrname]; 
-    }
-
     this.mainModifier = new Modifier({
       origin: [0.5, 0],
       transform: Transform.translate(0, 50, 0)
