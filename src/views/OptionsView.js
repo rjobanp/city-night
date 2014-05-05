@@ -28,6 +28,8 @@ define(function(require, exports, module) {
     // create background surface to catch swipe events
     _createBackgroundSurface.apply(this);
 
+    _createInfoSurface.apply(this);
+
     // pipe input events to output
     this._eventInput.pipe(this._eventOutput);
 
@@ -119,6 +121,28 @@ define(function(require, exports, module) {
 
     this.bgSurface.pipe(this);
   }
+
+  function _createInfoSurface() {
+    this.infoSurface = new Surface({
+      properties: {
+        textAlign: 'center',
+        color: '#ffffff',
+        fontSize: '16px',
+        padding: '30px'
+      },
+      content: '"City Night"<br>by Roshan Jobanputra<br>github.com/rosh93<br>roshanjobanputra.com<br><br>made using Famo.us<br><br>Images extracted from NASA Earth Observatory "Earth at Night 2012" Collection.'
+    });
+
+    this.infoModifier = new Modifier({
+      origin: [0.5, 0],
+      transform: Transform.translate(0,300,0)
+    });
+
+    this.add(this.infoModifier).add(this.infoSurface);
+
+    this.infoSurface.pipe(this);
+  }
+
 
   OptionsView.prototype = Object.create(View.prototype);
   OptionsView.prototype.constructor = OptionsView;

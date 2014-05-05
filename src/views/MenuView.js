@@ -96,7 +96,7 @@ define(function(require, exports, module) {
       Timer.setTimeout(function(i) {
         this.buttonModifiers[i].setOpacity(1);
         this.buttonModifiers[i].setTransform(Transform.multiply(
-        Transform.translate(this.buttonLeftOffset, this.buttonHeightOffset*(i+1), 0),
+        Transform.translate(this.buttonLeftOffset, this.buttonHeightOffset*(i)+50, 0),
         Transform.scale(1, 1, 1)
       ), {duration: 200, curve: 'easeOut'});
         this.buttonViews[i].showIcon();
