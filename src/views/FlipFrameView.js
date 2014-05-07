@@ -45,10 +45,10 @@ define(function(require, exports, module) {
     }
     this.currentCityIndex[this.currentIndex] = randomNum;
     this.cityView[this.currentIndex].setCity(this.cities[this.currentCityIndex[this.currentIndex]]);
+    this.cityName[this.currentIndex] = this.cities[this.currentCityIndex[this.currentIndex]].split(/-|\./)[1].replace('_', ' ').replace('_', ' ').replace('_', ' ');
 
-    // set the name shown to the 'other' index about to become the currnet index
-    var cityName = this.cities[this.currentCityIndex[this.otherIndex]].split(/-|\./)[1].replace('_', ' ').replace('_', ' ').replace('_', ' ');
-    this.nameSurface.setContent(cityName);
+    // set the name shown to the 'other' index about to become the current index
+    this.nameSurface.setContent(this.cityName[this.otherIndex]);
 
     var other = this.currentIndex;
     this.currentIndex = this.otherIndex;
@@ -109,6 +109,7 @@ define(function(require, exports, module) {
 
     this.currentCityIndex = [];
     this.cityView = [];
+    this.cityName = [];
     this.mainModifier = [];
     this.rotateModifier = [];
     this.mainXTransitionable = [];
@@ -133,6 +134,7 @@ define(function(require, exports, module) {
     // Create the city views and render controller
     this.currentCityIndex[index] = index;
     this.cityView[index] = new CityView(this.cities[index]);
+    this.cityName[index] = this.cities[index].split(/-|\./)[1].replace('_', ' ').replace('_', ' ').replace('_', ' ');
 
     // Create modifiers for moving view area
     this.mainModifier[index] = new Modifier();
