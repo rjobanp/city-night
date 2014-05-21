@@ -16,13 +16,17 @@ define(function(require, exports, module) {
 	function AppView() {
 		View.apply(this);
 
-		// Create modifier for moving main view area
+		// Create modifier for moving view areas
 		this.mainModifier = new Modifier();
+		this.menuModifier = new Modifier();
 
 		// Add transitionable to this main view modifier
 		this.mainTransitionable = new Transitionable(0); // 0 is default offset
 		this.mainModifier.transformFrom(function() {
-			return Transform.translate(this.mainTransitionable.get(), 0, 0);
+			return Transform.translate(this.mainTransitionable.get()*1.1, this.mainTransitionable.get()*.25, this.mainTransitionable.get()*-0.5);
+		}.bind(this));
+		this.menuModifier.transformFrom(function() {
+			return Transform.translate(this.mainTransitionable.get(),0,0);
 		}.bind(this));
 
 		// Create the menu view
@@ -37,12 +41,8 @@ define(function(require, exports, module) {
 			this.closeMenu();
 		}.bind(this));
 
-		// Render node for views
-		this.viewNode = new RenderNode();
-		this.viewNode.add(this.menuView);
-		this.viewNode.add(this.mainAreaView);
-
-		this.add(this.mainModifier).add(this.viewNode);
+		this.add(this.mainModifier).add(this.mainAreaView);
+		this.add(this.menuModifier).add(this.menuView);
 
     // Setup swipe handling for opening menu side
 		_setSwipeHandling.apply(this);

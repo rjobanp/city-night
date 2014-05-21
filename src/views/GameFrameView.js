@@ -12,6 +12,7 @@ define(function(require, exports, module) {
   var GameButtonsView = require('src/views/GameButtonsView.js');
   var GameControllerView = require('src/views/GameControllerView.js');
   var Cities = require('src/models/cities.js');
+  var GlobeView = require('src/views/GlobeView.js');
 
   function GameFrameView(params) {
     View.apply(this);
@@ -19,6 +20,9 @@ define(function(require, exports, module) {
     this.cityTypes = params.cityTypes;
     
     this.setCities();
+
+    this.globeView = new GlobeView();
+    this.add(this.globeView);
 
     this.optionCities = this.getOptionCities();
     
@@ -78,18 +82,38 @@ define(function(require, exports, module) {
     var newCities = this.getOptionCities();
 
     if ( this.currentView === 'A' ) {
+      Timer.setTimeout(function() {
+        this.cityViewA.mainSurface.addClass('blur');
+      }.bind(this), 50);
+      
       this.cityTransitionableA.set(100, {duration: 300, curve: 'easeOut'}, function() {
         this.cityViewA.setCity(newCities[getRandomInt(0,2)]);
+      }.bind(this));
 
-        this.cityTransitionableB.set(0, {duration: 400, curve: 'easeIn'});
+      this.globeView.spinGlobe(function() {
+        this.cityViewB.mainSurface.addClass('blur');
+        this.cityTransitionableB.set(-100, {duration: 0, curve: 'easeIn'});
+        this.cityTransitionableB.set(0, {duration: 100, curve: 'easeIn'}, function() {
+          this.cityViewB.mainSurface.removeClass('blur');
+        }.bind(this));
       }.bind(this));
 
       this.currentView = 'B';
     } else {
+      Timer.setTimeout(function() {
+        this.cityViewB.mainSurface.addClass('blur');
+      }.bind(this), 50);
+      
       this.cityTransitionableB.set(100, {duration: 300, curve: 'easeOut'}, function() {
         this.cityViewB.setCity(newCities[getRandomInt(0,2)]);
+      }.bind(this));
 
-        this.cityTransitionableA.set(0, {duration: 400, curve: 'easeIn'});
+      this.globeView.spinGlobe(function() {
+        this.cityViewA.mainSurface.addClass('blur');
+        this.cityTransitionableA.set(-100, {duration: 0, curve: 'easeIn'});
+        this.cityTransitionableA.set(0, {duration: 100, curve: 'easeIn'}, function() {
+          this.cityViewA.mainSurface.removeClass('blur');
+        }.bind(this));
       }.bind(this));
 
       this.currentView = 'A';
@@ -127,10 +151,7 @@ define(function(require, exports, module) {
     // Add transitionable and transforms to city modifier
     this.cityTransitionableA = new Transitionable(0);
     this.cityModifierA.transformFrom(function() {
-      return Transform.multiply(
-        Transform.translate(0,0, -this.cityTransitionableA.get()),
-        Transform.rotateZ(Math.PI*this.cityTransitionableA.get()/300)
-      )
+      return Transform.translate(-5*this.cityTransitionableA.get(),0, -0*this.cityTransitionableA.get())
     }.bind(this));
 
     this.cityModifierA.opacityFrom(function() {
@@ -150,10 +171,7 @@ define(function(require, exports, module) {
     // Add transitionable and transforms to city modifier
     this.cityTransitionableB = new Transitionable(100);
     this.cityModifierB.transformFrom(function() {
-      return Transform.multiply(
-        Transform.translate(0,0, -this.cityTransitionableB.get()),
-        Transform.rotateZ(Math.PI*this.cityTransitionableB.get()/300)
-      )
+      return Transform.translate(-5*this.cityTransitionableB.get(),0, -0*this.cityTransitionableB.get())
     }.bind(this));
 
     this.cityModifierB.opacityFrom(function() {

@@ -3,6 +3,7 @@ html {
     color: #ffffff;
     font-family: sans-serif;
     font-size: 20px;
+    background-image: url('../src/images/nasa_2012_night_scaleblur.png');
 } 
 .green-highlight {
   background-color: #27AE60 !important;
@@ -11,4 +12,8 @@ html {
 .red-highlight {
   background-color: #C0392B !important;
   color: #ffffff !important;
+}
+
+.blur {
+  -webkit-filter: blur(10px);
 }

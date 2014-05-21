@@ -19,9 +19,7 @@ define(function(require, exports, module) {
     // pipe input events to output
     this._eventInput.pipe(this._eventOutput);
 
-    this.mainModifier = new Modifier();
-
-    this.add(this.mainModifier).add(this.mainSurface);
+    this.add(this.mainSurface);
 
   }
 
