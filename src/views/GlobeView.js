@@ -37,7 +37,7 @@ define(function(require, exports, module) {
   function _setupGlobe() {
     this.mainSurface.setContent('src/images/nasa_2012_night_scaleblur.png');
     
-    this.mainTransitionable = new Transitionable([200, 150, -15]);
+    this.mainTransitionable = new Transitionable([200, 150, -1]);
 
     this.opacityTransitionable = new Transitionable(0);
 
@@ -52,12 +52,12 @@ define(function(require, exports, module) {
 
   GlobeView.prototype.spinGlobe = function(callbackFunc) {
     this.opacityTransitionable.set(1, {duration: 150, curve: 'easeIn'}, function() {
-      this.mainTransitionable.set([0, 0, -15], {duration: 0, curve: 'easeIn'}, function() {
-        this.mainTransitionable.set([getRandomInt(-2500,-1500), 0, -15], {duration: 600});
+      this.mainTransitionable.set([0, 0, -1], {duration: 0, curve: 'easeIn'}, function() {
+        this.mainTransitionable.set([getRandomInt(-2500,-1500), 0, -1], {duration: 600});
         Timer.setTimeout(function(callbackFunc) {
-          this.opacityTransitionable.set(0, {duration: 100, curve: 'easeOut'});
+          this.opacityTransitionable.set(0, {duration: 400, curve: 'easeOut'});
           callbackFunc();
-        }.bind(this, callbackFunc), 500);
+        }.bind(this, callbackFunc), 300);
 
       }.bind(this));
     }.bind(this));

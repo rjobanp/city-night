@@ -91,12 +91,14 @@ define(function(require, exports, module) {
         this.cityViewA.setCity(newCities[getRandomInt(0,2)]);
       }.bind(this));
 
+      this.cityTransitionableB.set(-100, {duration: 0, curve: 'easeIn'});
       this.globeView.spinGlobe(function() {
+        // this is callback for after globe is spun
         this.cityViewB.mainSurface.addClass('blur');
-        this.cityTransitionableB.set(-100, {duration: 0, curve: 'easeIn'});
-        this.cityTransitionableB.set(0, {duration: 100, curve: 'easeIn'}, function() {
+        this.cityTransitionableB.set(0, {duration: 300});
+        Timer.setTimeout(function() {
           this.cityViewB.mainSurface.removeClass('blur');
-        }.bind(this));
+        }.bind(this), 250);
       }.bind(this));
 
       this.currentView = 'B';
@@ -109,12 +111,14 @@ define(function(require, exports, module) {
         this.cityViewB.setCity(newCities[getRandomInt(0,2)]);
       }.bind(this));
 
+      this.cityTransitionableA.set(-100, {duration: 0, curve: 'easeIn'});
       this.globeView.spinGlobe(function() {
+        // this is callback for after globe is spun
         this.cityViewA.mainSurface.addClass('blur');
-        this.cityTransitionableA.set(-100, {duration: 0, curve: 'easeIn'});
-        this.cityTransitionableA.set(0, {duration: 100, curve: 'easeIn'}, function() {
+        this.cityTransitionableA.set(0, {duration: 300});
+        Timer.setTimeout(function() {
           this.cityViewA.mainSurface.removeClass('blur');
-        }.bind(this));
+        }.bind(this), 250);
       }.bind(this));
 
       this.currentView = 'A';
