@@ -53,7 +53,7 @@ define(function(require, exports, module) {
   GlobeView.prototype.spinGlobe = function(callbackFunc) {
     this.opacityTransitionable.set(1, {duration: 150, curve: 'easeIn'}, function() {
       this.mainTransitionable.set([0, 0, -1], {duration: 0, curve: 'easeIn'}, function() {
-        this.mainTransitionable.set([getRandomInt(-2500,-1500), 0, -1], {duration: 600});
+        this.mainTransitionable.set([getRandomInt(-2800,-1000), 0, -1], {duration: 600});
         Timer.setTimeout(function(callbackFunc) {
           this.opacityTransitionable.set(0, {duration: 400, curve: 'easeOut'});
           callbackFunc();

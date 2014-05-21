@@ -164,7 +164,7 @@ define(function(require, exports, module) {
     }.bind(this));
 
     this.cityModifierA.opacityFrom(function() {
-      return (1 - (this.cityTransitionableA.get()/100))
+      return (1 - (Math.abs(this.cityTransitionableA.get())/100))
     }.bind(this));
 
     this.cityViewA.pipe(this);
@@ -184,7 +184,7 @@ define(function(require, exports, module) {
     }.bind(this));
 
     this.cityModifierB.opacityFrom(function() {
-      return (1 - (this.cityTransitionableB.get()/100))
+      return (1 - (Math.abs(this.cityTransitionableB.get())/100))
     }.bind(this));
 
     this.cityViewB.pipe(this);

@@ -13,12 +13,16 @@ define(function(require, exports, module) {
   // custom dependencies
   var CityView = require('src/views/CityView.js');
   var Cities = require('src/models/cities.js');
+  var GlobeView = require('src/views/GlobeView.js');
 
   function FlipFrameView(params) {
     View.apply(this);
 
     this.cityTypes = params.cityTypes;
     this.leftTransitionable = params.leftTransitionable;
+
+    this.globeView = new GlobeView();
+    this.add(this.globeView);
 
     this.setCities();
 
@@ -207,15 +211,17 @@ define(function(require, exports, module) {
         var endY = ( y > 0 ) ? 950 : -950;
 
         this.mainXTransitionable[this.currentIndex].set(endX, {duration: 400, curve: 'easeOut'}, function() {
-          this.mainModifier[this.currentIndex].opacityFrom(0);
-          this.mainModifier[this.otherIndex].opacityFrom(1);
+          this.globeView.spinGlobe(function() {
+            this.mainModifier[this.currentIndex].opacityFrom(0);
+            this.mainModifier[this.otherIndex].opacityFrom(1);
 
-          this.mainXTransitionable[this.currentIndex].set(1000, {duration: 0});
-          this.mainYTransitionable[this.currentIndex].set(-1000, {duration: 0});
+            this.mainXTransitionable[this.currentIndex].set(1000, {duration: 0});
+            this.mainYTransitionable[this.currentIndex].set(-1000, {duration: 0});
 
-          this.mainXTransitionable[this.otherIndex].set(0, {duration: 300, curve: 'easeIn'});
-          this.mainYTransitionable[this.otherIndex].set(0, {duration: 300, curve: 'easeIn'});
-          this.nextCityView();
+            this.mainXTransitionable[this.otherIndex].set(0, {duration: 300, curve: 'easeIn'});
+            this.mainYTransitionable[this.otherIndex].set(0, {duration: 300, curve: 'easeIn'});
+            this.nextCityView();
+          }.bind(this));
         }.bind(this));
 
         this.mainYTransitionable[this.currentIndex].set(endY, {duration: 600, curve: 'easeOut'});
