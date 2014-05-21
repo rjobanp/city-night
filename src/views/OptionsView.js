@@ -127,7 +127,7 @@ define(function(require, exports, module) {
         fontSize: '16px',
         padding: '30px'
       },
-      content: '"City Night"<br>by Roshan Jobanputra<br>github.com/rosh93<br>roshanjobanputra.com<br><br>made using Famo.us<br><br>Images extracted from NASA Earth Observatory "Earth at Night 2012" Collection.'
+      content: '"City Night"<br>by Roshan Jobanputra<br>rosh93.github.com/city-night<br>roshanjobanputra.com<br><br>made using Famo.us<br><br>Images extracted from<br>NASA Earth Observatory<br>"Earth at Night 2012" collection<br><br>Includes 66 US cities and 80 World cities'
     });
 
     this.infoModifier = new Modifier({
