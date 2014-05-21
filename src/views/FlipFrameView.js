@@ -6,6 +6,7 @@ define(function(require, exports, module) {
   var Transitionable = require('famous/transitions/Transitionable');
   var Modifier = require('famous/core/Modifier');
   var GenericSync = require('famous/inputs/GenericSync');
+  var TouchSync = require('famous/inputs/TouchSync');
   var MouseSync = require('famous/inputs/MouseSync');
   var Timer = require('famous/utilities/Timer');
 
@@ -160,32 +161,22 @@ define(function(require, exports, module) {
 
   function _setSwipeHandling() {
     // add mouse sync to defaults touch and scroll sync on generic sync
-    GenericSync.register(MouseSync);
-
-    this.swiperX = new GenericSync(function() {
-      return this.mainXTransitionable[this.currentIndex].get();
-    }.bind(this), {
-      direction: GenericSync.DIRECTION_X
+    GenericSync.register({
+      mouse: MouseSync,
+      touch: TouchSync
     });
 
-    this.swiperY = new GenericSync(function() {
-      return this.mainYTransitionable[this.currentIndex].get();
-    }.bind(this), {
-      direction: GenericSync.DIRECTION_Y
-    });
+    this.swiper = new GenericSync(['mouse', 'touch']);
 
-    this.pipe(this.swiperX);
-    this.pipe(this.swiperY);
+    this.pipe(this.swiper);
 
-    var validSwipeXStart = true;
-    var validSwipeYStart = true;
+    var validSwipeStart = true;
 
     // this is for touch devices
     this.on('touchstart', function(data) {
       // if this swipe starts from the left side
       if ( data.touches[0].clientX - this.leftTransitionable.get() < 100 ) {
-        validSwipeXStart = false;
-        validSwipeYStart = false;
+        validSwipeStart = false;
       }
     }.bind(this));
     
@@ -193,24 +184,19 @@ define(function(require, exports, module) {
     this.on('mousedown', function(data) {
       // if this swipe starts from the left side
       if ( data.clientX - this.leftTransitionable.get() < 100 ) {
-        validSwipeXStart = false;
-        validSwipeYStart = false;
+        validSwipeStart = false;
       }
     }.bind(this));
 
-    this.swiperX.on('update', function(data) {
-      validSwipeXStart && this.mainXTransitionable[this.currentIndex].set(data.position);
+    this.swiper.on('update', function(data) {
+      validSwipeStart && this.mainXTransitionable[this.currentIndex].set(data.position[0]);
+      validSwipeStart && this.mainYTransitionable[this.currentIndex].set(data.position[1]);
     }.bind(this));
 
-    this.swiperY.on('update', function(data) {
-      validSwipeYStart && this.mainYTransitionable[this.currentIndex].set(data.position);
-    }.bind(this));
-
-    this.swiperX.on('end', Timer.debounce(_endSwipe.bind(this), 0));
+    this.swiper.on('end', Timer.debounce(_endSwipe.bind(this), 0));
 
     function _endSwipe() {
-      validSwipeXStart = true;
-      validSwipeYStart = true;
+      validSwipeStart = true;
 
       if ( Math.abs(this.mainXTransitionable[this.currentIndex].get()) > 100 || Math.abs(this.mainYTransitionable[this.currentIndex].get()) > 50 ) {
         
