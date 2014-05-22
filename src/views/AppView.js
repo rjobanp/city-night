@@ -23,7 +23,7 @@ define(function(require, exports, module) {
 		// Add transitionable to this main view modifier
 		this.mainTransitionable = new Transitionable(0); // 0 is default offset
 		this.mainModifier.transformFrom(function() {
-			return Transform.translate(this.mainTransitionable.get()*1.1, this.mainTransitionable.get()*.25, this.mainTransitionable.get()*-0.5);
+			return Transform.multiply(Transform.translate(this.mainTransitionable.get()*1.1, this.mainTransitionable.get()*.25, this.mainTransitionable.get()*-0.5), Transform.rotateY(Math.PI/1000*this.mainTransitionable.get()));
 		}.bind(this));
 		this.menuModifier.transformFrom(function() {
 			return Transform.translate(this.mainTransitionable.get(),0,0);
